@@ -88,8 +88,12 @@ docs/                   # Project documentation
   ROADMAP.md            # Development roadmap
   CHANGELOG.md          # Version history
   DEAD-CODE-TRIAGE.md   # Code audit report
+api/                    # Vercel serverless entry point
+  server.mjs            # Handler that imports createApp from server_dist
 patches/                # patch-package fixes for dependencies
-scripts/                # Build scripts (build.js)
+scripts/                # Build scripts
+  build.js              # Expo static build script
+  build-android.sh      # Android build script
 ```
 
 ## Common Commands
@@ -181,6 +185,7 @@ npm run db:push             # Drizzle schema migration (needs DATABASE_URL)
 **Configuration:**
 - `GET /api/voices` — Available narrator voices for current mode
 - `GET /api/music/:mode` — Background music track
+- `GET /api/music-info/:mode` — Music track metadata
 - `GET /api/health` — Server health check
 - `GET /api/ai-providers` — Provider availability status
 
@@ -296,12 +301,13 @@ npm run db:push             # Drizzle schema migration (needs DATABASE_URL)
 # AI Providers (via Replit integrations)
 AI_INTEGRATIONS_GEMINI_API_KEY=
 AI_INTEGRATIONS_OPENAI_API_KEY=
+AI_INTEGRATIONS_OPENAI_BASE_URL=     # Required for voice chat (Replit OpenAI connector base URL)
 AI_INTEGRATIONS_ANTHROPIC_API_KEY=
 AI_INTEGRATIONS_OPENROUTER_API_KEY=
 OPENAI_API_KEY=              # Direct key for video generation
 
 # TTS & Database
-ELEVENLABS_API_KEY=
+ELEVENLABS_API_KEY=          # Optional: if set, used directly; otherwise falls back to Replit ElevenLabs connector
 DATABASE_URL=                # PostgreSQL (required for voice chat only)
 
 # Server Config (optional)
@@ -316,6 +322,8 @@ REPLIT_DEV_DOMAIN=           # Dev server domain
 REPLIT_DOMAINS=              # Production domains (comma-separated)
 EXPO_PUBLIC_DOMAIN=          # Client API domain (set by dev script)
 ```
+
+Minimum required: `AI_INTEGRATIONS_GEMINI_API_KEY`. Optional for full features: OpenAI, Anthropic, ElevenLabs, DATABASE_URL.
 
 ## Story Response Schema (AI must return)
 ```json
@@ -411,40 +419,11 @@ npm run test:coverage   # vitest run --coverage
 - Target: >=80% branch coverage for server utilities
 - Mocks: mock all external API calls (Gemini, OpenAI, ElevenLabs)
 
-## Environment Variables
-
-```
-# AI Providers (via Replit integrations)
-AI_INTEGRATIONS_GEMINI_API_KEY=
-AI_INTEGRATIONS_OPENAI_API_KEY=
-AI_INTEGRATIONS_OPENAI_BASE_URL=     # Required for voice chat (Replit OpenAI connector base URL)
-AI_INTEGRATIONS_ANTHROPIC_API_KEY=
-AI_INTEGRATIONS_OPENROUTER_API_KEY=
-OPENAI_API_KEY=              # Direct key for video generation
-
-# TTS & Database
-ELEVENLABS_API_KEY=          # Optional: if set, used directly; otherwise falls back to Replit ElevenLabs connector
-DATABASE_URL=                # PostgreSQL (required for voice chat only)
-
-# Server Config (optional)
-PORT=5000                    # Default 5000
-NODE_ENV=                    # development | production
-RATE_LIMIT_WINDOW_MS=60000   # Default 60000ms
-RATE_LIMIT_MAX=10            # Default 10 requests
-TTS_CACHE_MAX_AGE_MS=86400000  # Default 24 hours
-
-# Replit-specific (auto-set)
-REPLIT_DEV_DOMAIN=           # Dev server domain
-REPLIT_DOMAINS=              # Production domains (comma-separated)
-EXPO_PUBLIC_DOMAIN=          # Client API domain (set by dev script)
-```
-
-Minimum required: `AI_INTEGRATIONS_GEMINI_API_KEY`. Optional for full features: OpenAI, Anthropic, ElevenLabs, DATABASE_URL.
-
 ## Development Notes
 
 - **Testing:** Vitest v4 configured with coverage via @vitest/coverage-v8
-- **No CI/CD pipelines** — Deployment via Replit push-to-deploy (Google Cloud Run)
+- **CI/CD:** GitHub Actions (`.github/workflows/ci.yml` — lint, test, typecheck, build on push/PR to main/develop; `eas-build.yml` — Expo EAS builds; `vercel-deploy.yml` — Vercel deployment; `publish.yml` — release publishing). Also supports Replit push-to-deploy
+- **Vercel deployment:** `api/server.mjs` serverless handler wraps `server_dist/index.js` via `createApp()`. Config in `vercel.json` (60s max duration, all routes rewrite to `/api/server`)
 - **React Compiler** enabled via app.json experiments
 - **New Architecture** (React Native) enabled
 - **Typed Routes** enabled for Expo Router
@@ -482,4 +461,3 @@ Minimum required: `AI_INTEGRATIONS_GEMINI_API_KEY`. Optional for full features: 
 - `server/replit_integrations/` — Replit-provided integration boilerplate; upstream updates may overwrite changes
 - `shared/schema.ts` — database schema changes require coordinated migration; do not modify alone
 - `.replit` — Replit workspace config; changes affect the dev environment for all contributors
-___BEGIN___COMMAND_DONE_MARKER___0
