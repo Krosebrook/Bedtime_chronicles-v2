@@ -58,7 +58,7 @@ jobs:
         run: npm ci
 
       - name: Build server
-        run: npm run build:server
+        run: npm run server:build
 
       - name: Upload server build artifacts
         uses: actions/upload-artifact@v4
