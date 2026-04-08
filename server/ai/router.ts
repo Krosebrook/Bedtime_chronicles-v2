@@ -10,6 +10,7 @@ import type {
   FallbackChain,
 } from "./types";
 import { CircuitBreaker } from "../circuit-breaker";
+import { retryWithJitter } from "../retry";
 
 const DEFAULT_CHAINS: FallbackChain[] = [
   { taskType: "story", providers: ["anthropic", "gemini", "openai", "meta-llama", "xai", "mistral", "cohere"] },
@@ -100,9 +101,10 @@ export class AIRouter {
           return providerCall;
         };
 
-        const response: TextGenerationResponse = breaker
-          ? await breaker.execute(makeCall)
-          : await makeCall();
+        const response: TextGenerationResponse = await retryWithJitter(
+          () => breaker ? breaker.execute(makeCall) : makeCall(),
+          { maxRetries: 1 }
+        );
 
         if (req.jsonMode) {
           let cleaned = response.text.trim();
@@ -182,7 +184,10 @@ export class AIRouter {
 
       try {
         const makeCall = () => provider.generateImage!(req);
-        const response = breaker ? await breaker.execute(makeCall) : await makeCall();
+        const response = await retryWithJitter(
+          () => breaker ? breaker.execute(makeCall) : makeCall(),
+          { maxRetries: 1 }
+        );
         return response;
       } catch (err) {
         lastError = err instanceof Error ? err : new Error(String(err));

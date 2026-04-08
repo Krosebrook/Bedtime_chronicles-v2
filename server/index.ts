@@ -3,6 +3,8 @@ import type { Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { isAuthEnabled } from "./auth";
 import { logger, createRequestId } from "./logger";
+import { recordRequest } from "./metrics";
+import { createLoadSheddingMiddleware } from "./load-shedding";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -161,6 +163,7 @@ function setupRequestLogging(app: express.Application) {
 
       const duration = Date.now() - start;
       req.log!.info({ method: req.method, path: reqPath, status: res.statusCode, duration }, 'request completed');
+      recordRequest(res.statusCode);
     });
 
     next();
@@ -335,6 +338,7 @@ export async function createApp(): Promise<express.Application> {
   setupCors(app);
   setupBodyParsing(app);
   setupRequestLogging(app);
+  app.use(createLoadSheddingMiddleware());
 
   configureExpoAndLanding(app);
 
