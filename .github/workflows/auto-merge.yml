@@ -36,7 +36,9 @@ jobs:
       - name: Label major updates for manual review
         if: steps.dependabot-metadata.outputs.update-type == 'version-update:semver-major'
         run: |
-          gh pr edit "$PR_URL" --add-label "needs-review,breaking-change"
+          gh label create "needs-review" --color "FBCA04" --description "Requires manual review" || true
+          gh label create "breaking-change" --color "D93F0B" --description "Potential breaking change" || true
+          gh pr edit "$PR_URL" --add-label "needs-review" --add-label "breaking-change"
           gh pr comment "$PR_URL" --body "⚠️ **Major version update** — requires manual review before merging. Please check the changelog for breaking changes."
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
