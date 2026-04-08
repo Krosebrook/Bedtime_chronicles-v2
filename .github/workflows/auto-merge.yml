@@ -23,7 +23,8 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Auto-merge patch and minor updates
-        # Auto-merge only safe (patch/minor) updates after CI passes
+        # `gh pr merge --auto` waits for all required CI checks to pass before
+        # actually merging — it will not merge immediately on PR open.
         if: |
           steps.dependabot-metadata.outputs.update-type == 'version-update:semver-patch' ||
           steps.dependabot-metadata.outputs.update-type == 'version-update:semver-minor'

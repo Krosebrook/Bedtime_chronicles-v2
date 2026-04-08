@@ -12,6 +12,10 @@ on:
         type: boolean
         default: true
 
+env:
+  # Branches that must never be deleted automatically
+  PROTECTED_BRANCHES: "main,master,develop,staging,production"
+
 permissions:
   contents: write
   pull-requests: read
@@ -32,8 +36,7 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
 
-            // Never delete protected branches
-            const protectedBranches = ['main', 'master', 'develop', 'staging', 'production'];
+            const protectedBranches = process.env.PROTECTED_BRANCHES.split(',');
             if (protectedBranches.includes(branchName)) {
               console.log(`Skipping deletion of protected branch: ${branchName}`);
               return;
@@ -73,7 +76,7 @@ jobs:
             const dryRun = ${{ github.event.inputs.dry_run || 'true' }};
             const owner = context.repo.owner;
             const repo = context.repo.repo;
-            const protectedBranches = ['main', 'master', 'develop', 'staging', 'production'];
+            const protectedBranches = process.env.PROTECTED_BRANCHES.split(',');
 
             // Branches with no activity for > 90 days
             const cutoffDate = new Date();
@@ -121,3 +124,4 @@ jobs:
                 }
               }
             }
+
