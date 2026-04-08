@@ -1,6 +1,13 @@
 import { defineConfig } from 'vitest/config';
+import path from 'path';
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      // Zod 3.25+ has broken ESM exports on Windows — force CJS entry
+      zod: path.resolve(__dirname, 'node_modules/zod/index.cjs'),
+    },
+  },
   test: {
     globals: true,
     environment: 'node',
