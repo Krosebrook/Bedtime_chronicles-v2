@@ -12,6 +12,8 @@ import { checkRateLimit, cleanupExpiredEntries } from "./rate-limit";
 import { toErrorMessage, classifyError, createErrorResponse } from "./utils";
 import { getFeatureFlags, isFeatureEnabled } from "./feature-flags";
 import { logger } from "./logger";
+import { getMetrics } from "./metrics";
+import { getActiveRequests } from "./load-shedding";
 import { IdempotencyCache } from "./idempotency";
 import { TtsCacheManager } from "./tts-cache";
 import crypto from "node:crypto";
@@ -51,6 +53,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     return requireAuth(req, res, next);
   });
 
+  app.get("/api/metrics", (_req, res) => {
+    res.json(getMetrics());
+  });
+
   app.get("/api/health", (_req, res) => {
     const providers = getProviderStatuses();
     const aiAvailable = providers.some((p) => p.available && p.capabilities.text);
@@ -61,6 +67,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       aiProvidersAvailable: aiAvailable,
       ttsAvailable,
       features: getFeatureFlags(),
+      activeRequests: getActiveRequests(),
     });
   });
 
