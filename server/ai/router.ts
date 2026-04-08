@@ -63,7 +63,19 @@ export class AIRouter {
     let lastError: Error | null = null;
     for (const provider of chain) {
       try {
-        const response = await provider.generateText(req);
+        const providerCall = provider.generateText(req);
+
+        let response: TextGenerationResponse;
+        if (req.timeoutMs && req.timeoutMs > 0) {
+          response = await Promise.race([
+            providerCall,
+            new Promise<never>((_, reject) =>
+              setTimeout(() => reject(new Error(`${provider.displayName} timed out after ${req.timeoutMs}ms`)), req.timeoutMs)
+            ),
+          ]);
+        } else {
+          response = await providerCall;
+        }
 
         if (req.jsonMode) {
           let cleaned = response.text.trim();
@@ -75,7 +87,8 @@ export class AIRouter {
             continue;
           }
           try {
-            JSON.parse(jsonMatch[0]);
+            response.parsedJson = JSON.parse(jsonMatch[0]);
+            response.text = jsonMatch[0];
           } catch {
             console.error(`[AI Router] ${provider.displayName} returned unparseable JSON for ${taskType}, trying next provider`);
             lastError = new Error(`${provider.displayName} returned malformed JSON`);

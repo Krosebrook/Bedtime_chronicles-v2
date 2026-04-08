@@ -1,6 +1,7 @@
 import express from "express";
 import type { Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
+import { isAuthEnabled } from "./auth";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -47,6 +48,10 @@ function validateEnvironment() {
     log("[Env] WARNING: No image AI providers configured — avatar/scene generation will fail");
   }
 
+  if (!isAuthEnabled()) {
+    log("[Env] WARNING: FIREBASE_SERVICE_ACCOUNT_KEY not set — authentication is DISABLED (dev mode)");
+  }
+
   log(`[Env] Environment validation complete (${textProviders} text providers, ${imageProviders} image providers)`);
 }
 
@@ -61,7 +66,6 @@ function setupSecurityHeaders(app: express.Application) {
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader("X-Frame-Options", "DENY");
     res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
-    res.setHeader("X-XSS-Protection", "1; mode=block");
     res.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; media-src 'self' blob: https:; connect-src 'self' https:; font-src 'self' https://fonts.gstatic.com https:;");
     res.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
     next();
@@ -105,8 +109,8 @@ function setupCors(app: express.Application) {
       }
     })();
 
-    // Allow Vercel preview URLs (*.vercel.app)
-    const isVercelPreview = origin ? /\.vercel\.app$/.test(new URL(origin).hostname) : false;
+    // Allow Vercel preview URLs — restricted to our project prefix
+    const isVercelPreview = origin ? /^infinite-hero.*\.vercel\.app$/.test(new URL(origin).hostname) : false;
 
     if (origin && (origins.has(origin) || isLocalhost || isVercelPreview)) {
       res.header("Access-Control-Allow-Origin", origin);

@@ -234,6 +234,81 @@ describe('AIRouter', () => {
     });
   });
 
+  describe('timeout support', () => {
+    it('rejects when provider exceeds timeoutMs', async () => {
+      const slowProvider = createMockProvider({
+        name: 'anthropic',
+        generateText: vi.fn().mockImplementation(
+          () => new Promise((resolve) => setTimeout(() => resolve({
+            text: 'late',
+            provider: 'anthropic' as const,
+            model: 'model',
+          }), 5000))
+        ),
+      });
+      router.registerProvider(slowProvider);
+
+      await expect(
+        router.generateText('story', { ...DEFAULT_REQUEST, timeoutMs: 50 })
+      ).rejects.toThrow(/timed out/);
+    });
+
+    it('succeeds when provider responds within timeoutMs', async () => {
+      const fastProvider = createMockProvider({ name: 'anthropic' });
+      router.registerProvider(fastProvider);
+
+      const result = await router.generateText('story', { ...DEFAULT_REQUEST, timeoutMs: 5000 });
+      expect(result.provider).toBe('anthropic');
+    });
+  });
+
+  describe('parsedJson in jsonMode', () => {
+    it('returns parsedJson when jsonMode is true', async () => {
+      const provider = createMockProvider({
+        name: 'anthropic',
+        generateText: vi.fn().mockResolvedValue({
+          text: '{"title":"test","value":42}',
+          provider: 'anthropic',
+          model: 'model',
+        }),
+      });
+      router.registerProvider(provider);
+
+      const result = await router.generateText('story', {
+        ...DEFAULT_REQUEST,
+        jsonMode: true,
+      });
+      expect(result.parsedJson).toEqual({ title: 'test', value: 42 });
+    });
+
+    it('sets text to the cleaned JSON string', async () => {
+      const provider = createMockProvider({
+        name: 'anthropic',
+        generateText: vi.fn().mockResolvedValue({
+          text: '```json\n{"title":"test"}\n```',
+          provider: 'anthropic',
+          model: 'model',
+        }),
+      });
+      router.registerProvider(provider);
+
+      const result = await router.generateText('story', {
+        ...DEFAULT_REQUEST,
+        jsonMode: true,
+      });
+      expect(result.text).toBe('{"title":"test"}');
+      expect(result.parsedJson).toEqual({ title: 'test' });
+    });
+
+    it('does not set parsedJson when jsonMode is false', async () => {
+      const provider = createMockProvider({ name: 'anthropic' });
+      router.registerProvider(provider);
+
+      const result = await router.generateText('story', DEFAULT_REQUEST);
+      expect(result.parsedJson).toBeUndefined();
+    });
+  });
+
   describe('generateImage', () => {
     it('returns image from the first available provider', async () => {
       const gemini = createMockProvider({
