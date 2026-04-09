@@ -12,7 +12,7 @@
     "server:dev": "NODE_ENV=development tsx server/index.ts",
     "expo:start:static:build": "npx expo start --no-dev --minify --localhost",
     "expo:static:build": "node scripts/build.js",
-    "server:build": "./node_modules/.bin/esbuild server/index.ts --platform=node --bundle --format=esm --outdir=server_dist",
+    "server:build": "esbuild server/index.ts --platform=node --bundle --format=esm --outdir=server_dist",
     "server:prod": "NODE_ENV=production node server_dist/index.js",
     "db:push": "drizzle-kit push",
     "start": "npx expo start",
@@ -25,7 +25,7 @@
     "preflight": "node scripts/preflight.js"
   },
   "engines": {
-    "node": "20.x",
+    "node": "20.x || 22.x",
     "npm": ">=10.0.0"
   },
   "dependencies": {
