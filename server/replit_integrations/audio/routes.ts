@@ -1,6 +1,10 @@
 import express, { type Express, type Request, type Response } from "express";
+import type { ParsedQs } from "qs";
 import { chatStorage } from "../chat/storage";
 import { openai, speechToText, ensureCompatibleFormat } from "./client";
+
+const qs = (val: string | string[] | ParsedQs | ParsedQs[] | undefined): string =>
+  Array.isArray(val) ? (val[0] as string) ?? '' : (val as string) ?? '';
 
 // Body parser with 50MB limit for audio payloads
 const audioBodyParser = express.json({ limit: "50mb" });
@@ -20,8 +24,7 @@ export function registerAudioRoutes(app: Express): void {
   // Get single conversation with messages
   app.get("/api/conversations/:id", async (req: Request, res: Response) => {
     try {
-      const idParam = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-      const id = parseInt(idParam);
+      const id = parseInt(qs(req.params.id));
       const conversation = await chatStorage.getConversation(id);
       if (!conversation) {
         return res.status(404).json({ error: "Conversation not found" });
@@ -49,8 +52,7 @@ export function registerAudioRoutes(app: Express): void {
   // Delete conversation
   app.delete("/api/conversations/:id", async (req: Request, res: Response) => {
     try {
-      const idParam = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-      const id = parseInt(idParam);
+      const id = parseInt(qs(req.params.id));
       await chatStorage.deleteConversation(id);
       res.status(204).send();
     } catch (error) {
@@ -61,11 +63,10 @@ export function registerAudioRoutes(app: Express): void {
 
   // Send voice message and get streaming audio response
   // Auto-detects audio format and converts WebM/MP4/OGG to WAV
-  // Uses gpt-4o-mini-transcribe for STT, gpt-4o-audio-preview for voice response
+  // Uses gpt-4o-mini-transcribe for STT, gpt-audio for voice response
   app.post("/api/conversations/:id/messages", audioBodyParser, async (req: Request, res: Response) => {
     try {
-      const idParam = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
-      const conversationId = parseInt(idParam);
+      const conversationId = parseInt(qs(req.params.id));
       const { audio, voice = "alloy" } = req.body;
 
       if (!audio) {
@@ -96,9 +97,9 @@ export function registerAudioRoutes(app: Express): void {
 
       res.write(`data: ${JSON.stringify({ type: "user_transcript", data: userTranscript })}\n\n`);
 
-      // 6. Stream audio response from gpt-4o-audio-preview
+      // 6. Stream audio response from gpt-audio
       const stream = await openai.chat.completions.create({
-        model: "gpt-4o-audio-preview",
+        model: "gpt-audio",
         modalities: ["text", "audio"],
         audio: { voice, format: "pcm16" },
         messages: chatHistory,
