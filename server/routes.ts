@@ -16,6 +16,7 @@ import { getMetrics } from "./metrics";
 import { getActiveRequests } from "./load-shedding";
 import { IdempotencyCache } from "./idempotency";
 import { TtsCacheManager } from "./tts-cache";
+import { registerImageRoutes } from "./replit_integrations/image";
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
@@ -544,6 +545,12 @@ Style: ${sceneStyle}. Wide landscape composition, magical atmosphere, child-safe
   if (process.env.AI_INTEGRATIONS_OPENAI_API_KEY && process.env.DATABASE_URL && isFeatureEnabled('voiceChatEnabled')) {
     registerAudioRoutes(app);
     logger.info('voice chat & conversation routes registered');
+  }
+
+  // Register Gemini direct image generation route (replit_integrations)
+  if (process.env.AI_INTEGRATIONS_GEMINI_API_KEY) {
+    registerImageRoutes(app);
+    console.log("[Routes] Gemini image generation route registered");
   }
 
   const httpServer = createServer(app);

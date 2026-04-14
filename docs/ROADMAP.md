@@ -22,6 +22,14 @@ Items are scored using Weighted Shortest Job First (WSJF): `(Business Value + Ti
 | Wire story feedback/rating UI | Feature | 2026-04-07 |
 | Reuse HeroCard.tsx in hero selection | Feature | 2026-04-07 |
 | Add npm audit to CI | Security | 2026-04-07 |
+| Fix audio pipeline (model name + ffmpeg) | Bug Fix | 2026-03-25 |
+| Model audit (rolling aliases, dead refs) | Maintenance | 2026-03-25 |
+| Wire Gemini image integration route | Feature | 2026-03-25 |
+| Harden input validation (parseInt, content, audio, voice) | Security | 2026-03-25 |
+| Add conversation pagination | Feature | 2026-03-25 |
+| Add Permissions-Policy & X-Permitted-Cross-Domain-Policies headers | Security | 2026-03-25 |
+| Safe JSON parsing for AI responses | Bug Fix | 2026-03-25 |
+| Replace unsafe `catch (error: any)` patterns | Code Quality | 2026-03-25 |
 
 ## Backlog (Prioritized)
 

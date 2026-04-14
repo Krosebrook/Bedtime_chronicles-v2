@@ -7,7 +7,7 @@ export function OfflineBanner() {
   return (
     <View style={styles.container}>
       <Ionicons name="cloud-offline-outline" size={16} color="#fbbf24" />
-      <Text style={styles.text}>You're offline — saved stories are still available</Text>
+      <Text style={styles.text}>You&apos;re offline — saved stories are still available</Text>
     </View>
   );
 }
