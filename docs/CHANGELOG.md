@@ -15,6 +15,11 @@ All notable changes to Infinity Heroes: Bedtime Chronicles are documented here.
 - **Audio payload validation** — Voice messages validated for type, base64 size estimation (max 25MB), and voice param allowlisted against `alloy|echo|fable|onyx|nova|shimmer`.
 - **Conversation title sanitization** — Titles trimmed and capped at 200 characters.
 - **Security headers** — Added `Permissions-Policy` (camera=(), microphone=(self), geolocation=()) and `X-Permitted-Cross-Domain-Policies: none`.
+- **Story feedback/rating UI** — Star rating + optional text feedback on the completion screen, saved via `updateFeedback()` to story storage.
+- **Read/unread story indicators** — Library shows "NEW" badge on unread stories with highlighted border; stories marked as read on tap.
+- **HeroCard in quick-create** — Selected theme now shows a hero preview card using the `HeroCard` component.
+- **KeyboardAwareScrollView on forms** — `story-details.tsx` and `quick-create.tsx` now use `KeyboardAwareScrollViewCompat` so inputs scroll into view when the keyboard opens.
+- **npm audit scripts** — Added `npm run audit` and `npm run audit:fix` to package.json.
 
 ### Changed
 - `GET /api/conversations` response format changed from array to `{ data: [], total, limit, offset }` for pagination support.

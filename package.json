@@ -19,6 +19,8 @@
     "lint": "npx expo lint",
     "lint:fix": "npx expo lint --fix",
     "typecheck": "npx tsc --noEmit",
+    "audit": "npm audit --omit=dev",
+    "audit:fix": "npm audit fix --omit=dev",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",

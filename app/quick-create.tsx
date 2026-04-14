@@ -18,6 +18,9 @@ import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { StarField } from "@/components/StarField";
 import Colors from "@/constants/colors";
+import { HEROES } from "@/constants/heroes";
+import { HeroCard } from "@/components/HeroCard";
+import { KeyboardAwareScrollViewCompat } from "@/components/KeyboardAwareScrollViewCompat";
 
 const THEMES = [
   {
@@ -123,6 +126,7 @@ export default function QuickCreateScreen() {
   };
 
   const selectedThemeData = THEMES.find((t) => t.id === selectedTheme) || THEMES[0];
+  const selectedHero = HEROES.find((h) => h.id === selectedThemeData.heroId);
 
   return (
     <View style={styles.container}>
@@ -183,6 +187,23 @@ export default function QuickCreateScreen() {
             })}
           </ScrollView>
         </Animated.View>
+
+        {selectedHero && (
+          <Animated.View entering={FadeInDown.duration(400).delay(150)} style={styles.heroPreview}>
+            <Text style={styles.sectionLabel}>Your Hero</Text>
+            <View style={styles.heroCardWrap}>
+              <HeroCard
+                hero={selectedHero}
+                onPress={() => {
+                  router.push({
+                    pathname: "/story-details",
+                    params: { heroId: selectedHero.id },
+                  });
+                }}
+              />
+            </View>
+          </Animated.View>
+        )}
 
         <Animated.View entering={FadeInDown.duration(400).delay(200)} style={styles.nameSection}>
           <Text style={styles.sectionLabel}>Child&apos;s Name</Text>
@@ -407,6 +428,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  heroPreview: { marginTop: 20 },
+  heroCardWrap: { alignItems: "center" },
   nameSection: { marginTop: 24 },
   inputWrap: {
     flexDirection: "row",
