@@ -13,7 +13,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    include: ['server/**/*.test.ts', 'lib/**/*.test.ts', '__tests__/**/*.test.ts'],
+    include: ['server/**/*.test.ts', 'lib/**/*.test.ts', '__tests__/**/*.test.ts', 'shared/**/*.test.ts'],
     exclude: ['node_modules', 'server_dist', 'static-build'],
     coverage: {
       provider: 'v8',
