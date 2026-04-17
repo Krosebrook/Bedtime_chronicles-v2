@@ -28,11 +28,16 @@ Items are scored using Weighted Shortest Job First (WSJF): `(Business Value + Ti
 | # | Item | Value | Criticality | Risk | Size | WSJF | Notes |
 |---|------|-------|-------------|------|------|------|-------|
 | 1 | Upgrade to Expo SDK 55 | 5 | 8 | 5 | 3 | 6.0 | Removes need for expo-asset patch; unblocks high-severity `@xmldom/xmldom` fix |
+
+### Medium Priority
+
+| # | Item | Value | Criticality | Risk | Size | WSJF | Notes |
+|---|------|-------|-------------|------|------|------|-------|
 | 2 | Use HeroCard.tsx in quick-create | 3 | 2 | 1 | 2 | 3.0 | Reuse orphaned component |
 | 3 | Build voice chat UI screen | 8 | 3 | 2 | 5 | 2.6 | Backend routes ready; needs Expo screen + audio recording |
 | 4 | Build story feedback/rating UI | 3 | 2 | 1 | 3 | 2.0 | Storage function exists (updateFeedback); no call sites yet |
 
-### Low Priority (WSJF < 4)
+### Low Priority
 
 | # | Item | Value | Criticality | Risk | Size | WSJF | Notes |
 |---|------|-------|-------------|------|------|------|-------|
@@ -48,10 +53,10 @@ Items are scored using Weighted Shortest Job First (WSJF): `(Business Value + Ti
 
 ## Known Audit Issues
 
-7 high-severity CVEs remain in transitive dependencies — all require breaking major-version bumps:
-- `@xmldom/xmldom` — blocked by Expo SDK 55 upgrade (Item 1)
-- `drizzle-orm` — requires 0.39 → 0.45 breaking upgrade
-- `@tootallnate/once` (via `firebase-admin`) — requires firebase-admin downgrade
+7 high-severity advisories remain across 3 transitive dependency trees — all require breaking major-version bumps:
+- `@xmldom/xmldom` (1 advisory: GHSA-wh4c-j3r5-mjhp) — blocked by Expo SDK 55 upgrade (Item 1)
+- `drizzle-orm` (1 advisory: GHSA-gpj5-g38j-94v9) — requires 0.39 → 0.45 breaking upgrade
+- `@tootallnate/once` via `firebase-admin` (5 advisories across transitive chain: `http-proxy-agent` → `teeny-request` → `@google-cloud/storage` → `firebase-admin`) — requires firebase-admin downgrade to v10
 
 CI currently uses `--audit-level=critical`. Tighten to `--audit-level=high` after Item 1 and drizzle-orm upgrade.
 
