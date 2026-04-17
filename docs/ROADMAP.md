@@ -23,7 +23,7 @@ Items are scored using Weighted Shortest Job First (WSJF): `(Business Value + Ti
 
 ## Backlog (Prioritized)
 
-### High Priority (WSJF > 4)
+### High Priority
 
 | # | Item | Value | Criticality | Risk | Size | WSJF | Notes |
 |---|------|-------|-------------|------|------|------|-------|
