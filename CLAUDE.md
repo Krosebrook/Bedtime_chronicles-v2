@@ -231,6 +231,17 @@ Each provider is wrapped in a circuit breaker (5 failures → open → 60s reset
 - `DELETE /api/conversations/:id` — Delete conversation
 - `POST /api/conversations/:id/messages` — Send voice message in a conversation
 
+**Replit Integrations (conditional — registered by `server/replit_integrations/*`):**
+- `/api/audio/*` — audio pipeline routes (registered by `registerAudioRoutes()`)
+- `/api/image/*` — image pipeline routes (registered by `registerImageRoutes()`)
+
+## Authentication
+
+- The server uses Firebase Admin (`server/auth.ts`) for token verification. Clients hit Firebase anonymous-auth on the web side (`lib/AuthContext.tsx`) and send the resulting ID token as a `Bearer` header.
+- `requireAuth` middleware attaches `req.user = { uid, isAnonymous }` and 401s on a missing or invalid token.
+- **Production guard:** when `NODE_ENV=production` and `FIREBASE_SERVICE_ACCOUNT_KEY` is unset, every auth-gated route returns 503. There is no `AUTH_DISABLED` opt-out — it was removed in the 2026-04 audit.
+- In dev (no `NODE_ENV=production`), auth is skipped and an anonymous `req.user` is assigned from the client IP.
+
 ## Code Conventions
 
 ### Naming
@@ -391,6 +402,7 @@ Minimum required: `AI_INTEGRATIONS_GEMINI_API_KEY`. Optional for full features: 
 - `@infinity_heroes_onboarding_complete` — Onboarding flag
 - `@infinity_heroes_preferences` — Legacy key (auto-migrates to app_settings)
 - `@infinity_heroes_settings_migrated` — Migration flag for legacy → new settings
+- `@infinity_heroes_storage_version` — Storage-schema version tracked by `lib/storage-migration.ts`
 
 ## App Settings (defaults)
 ```typescript
@@ -504,7 +516,7 @@ npm run test:coverage   # vitest run --coverage
 
 ## Files/Directories — Do Not Modify Without Explicit Approval
 
-- `patches/` — patch-package fixes; modifying breaks the postinstall step
+- `patches/` (if present) — patch-package fixes; modifying breaks the postinstall step. Folder was removed after the SDK 55 upgrade but may return for future patches
 - `server/replit_integrations/` — Replit-provided integration boilerplate; upstream updates may overwrite changes
 - `shared/schema.ts` — database schema changes require coordinated migration; do not modify alone
 - `.replit` — Replit workspace config; changes affect the dev environment for all contributors
