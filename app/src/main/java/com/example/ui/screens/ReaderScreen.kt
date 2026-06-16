@@ -290,7 +290,7 @@ fun ReaderScreen(storyId: String?, onBack: () -> Unit) {
                             Icon(
                                 imageVector = if (isMidnightMode) Icons.Default.WbSunny else Icons.Default.NightsStay,
                                 tint = if (isMidnightMode) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
-                                contentDescription = if (isMidnightMode) "Switch to Cosmic Theme" else "Switch to Midnight Theme"
+                                contentDescription = if (isMidnightMode) "Switch to Light Theme" else "Switch to Night Mode (Warm)"
                             )
                         }
                         IconButton(onClick = { showAmbientDialog = true }) {
@@ -323,6 +323,23 @@ fun ReaderScreen(storyId: String?, onBack: () -> Unit) {
                         .verticalScroll(rememberScrollState())
                         .padding(horizontal = 24.dp)
                 ) {
+                // Progressive Bedtime Reading Tracking Bar (moved to top edge)
+                val progress = if (sentences.isNotEmpty()) {
+                    ((activeSentenceIndex + 1).toFloat() / sentences.size.toFloat()).coerceIn(0f, 1f)
+                } else {
+                    0f
+                }
+                
+                LinearProgressIndicator(
+                    progress = progress,
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(4.dp)
+                        .clip(RoundedCornerShape(bottomStart = 2.dp, bottomEnd = 2.dp))
+                )
+
                 Spacer(modifier = Modifier.height(16.dp))
                 Box(
                     modifier = Modifier
@@ -472,42 +489,7 @@ fun ReaderScreen(storyId: String?, onBack: () -> Unit) {
                     }
                 }
 
-                // Progressive Bedtime Reading Tracking Bar
-                val progress = if (sentences.isNotEmpty()) {
-                    ((activeSentenceIndex + 1).toFloat() / sentences.size.toFloat()).coerceIn(0f, 1f)
-                } else {
-                    0f
-                }
-                
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Story Progress",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = Slate400,
-                        modifier = Modifier.padding(end = 12.dp)
-                    )
-                    LinearProgressIndicator(
-                        progress = progress,
-                        color = MaterialTheme.colorScheme.primary,
-                        trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(6.dp)
-                            .clip(RoundedCornerShape(3.dp))
-                    )
-                    Text(
-                        text = "${(progress * 100).toInt()}%",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(start = 12.dp),
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+                // Removed inline progress bar since it's moved to the top edge now
 
                 Spacer(modifier = Modifier.height(16.dp))
 

@@ -28,19 +28,19 @@ val DarkColorScheme = androidx.compose.material3.darkColorScheme(
 )
 
 val MidnightColorScheme = androidx.compose.material3.darkColorScheme(
-    primary = Color(0xFF38BDF8), // Celestial Cyan
-    secondary = Color(0xFFFBBF24), // Milkyway Amber
-    tertiary = Color(0xFFA5B4FC), // Lavender starlight
-    background = Color(0xFF000000), // Pure Midnight Void black
-    surface = Color(0xFF08080C), // Dark matte obsidian
-    surfaceVariant = Color(0xFF111116), // Dark obsidian contrast
+    primary = Color(0xFFF97316), // Warm Amber
+    secondary = Color(0xFFEF4444), // Warm Red
+    tertiary = Color(0xFFFBBF24), // Soft Amber
+    background = Color(0xFF140C05), // Deep warm brown (low-light)
+    surface = Color(0xFF26160A), // Matte warm obsidian
+    surfaceVariant = Color(0xFF331E0D), // Warm contrast
     onPrimary = Color.Black,
     onSecondary = Color.Black,
     onTertiary = Color.Black,
-    onBackground = Color(0xFFF8FAFC), // Crisp ultra high contrast white
-    onSurface = Color(0xFFF8FAFC), // Crisp ultra high contrast white
-    onSurfaceVariant = Color(0xFFE2E8F0),
-    outline = Color(0xFF334155) // Slate gray border
+    onBackground = Color(0xFFFFEDD5), // Warm peach for eye strain reduction
+    onSurface = Color(0xFFFFEDD5),
+    onSurfaceVariant = Color(0xFFFDBA74), // Orange tint text
+    outline = Color(0xFF78350F) // Warm slate border
 )
 
 val LightColorScheme = androidx.compose.material3.lightColorScheme(
