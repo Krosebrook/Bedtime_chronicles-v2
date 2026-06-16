@@ -1,0 +1,48 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "strict": true,
+    "noEmitOnError": true,
+    "ignoreDeprecations": "6.0",
+    "paths": {
+      "@/components/*": [
+        "./*",
+        "./legacy-prototype/react-native/components/*"
+      ],
+      "@/lib/*": [
+        "./*",
+        "./legacy-prototype/react-native/services/*"
+      ],
+      "@/constants/*": [
+        "./*",
+        "./legacy-prototype/react-native/config/*"
+      ],
+      "@/hooks/*": [
+        "./*",
+        "./legacy-prototype/react-native/hooks/*"
+      ],
+      "@/*": [
+        "./*"
+      ],
+      "@shared/*": [
+        "./shared/*"
+      ]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "artifacts",
+    "attached_assets",
+    "server_dist",
+    "static-build",
+    "**/*.test.ts",
+    ".agents/**"
+  ]
+}

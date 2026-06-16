@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Infinity Heroes - Story Library</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&amp;family=Nunito+Sans:opsz,wght@6..12,400;6..12,600&amp;family=Plus+Jakarta+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-low": "#191933",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "secondary-container": "#ee9800",
+                        "on-primary-fixed": "#07006c",
+                        "surface-tint": "#c0c1ff",
+                        "surface-container-high": "#272742",
+                        "textMuted": "#8899aa",
+                        "accentDim": "rgba(99, 102, 241, 0.2)",
+                        "surface-container-highest": "#32324d",
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "tertiary-fixed": "#e5e1ed",
+                        "primary": "#c0c1ff",
+                        "on-background": "#e1dfff",
+                        "error": "#ffb4ab",
+                        "on-primary": "#1000a9",
+                        "on-error": "#690005",
+                        "surface-bright": "#363752",
+                        "on-error-container": "#ffdad6",
+                        "secondary-fixed-dim": "#ffb95f",
+                        "outline-variant": "#464554",
+                        "surface-container": "#1d1d37",
+                        "primary-fixed": "#e1e0ff",
+                        "inverse-on-surface": "#2e2e49",
+                        "surface": "#0d0d2b",
+                        "inverse-surface": "#e1dfff",
+                        "elevated": "#141430",
+                        "on-secondary-fixed-variant": "#653e00",
+                        "on-secondary": "#472a00",
+                        "error-container": "#93000a",
+                        "on-secondary-fixed": "#2a1700",
+                        "tertiary-container": "#928f9a",
+                        "tertiary-fixed-dim": "#c8c5d0",
+                        "surface-container-lowest": "#0b0b25",
+                        "primary-container": "#8083ff",
+                        "on-tertiary-fixed-variant": "#47464f",
+                        "on-tertiary": "#302f38",
+                        "glass": "rgba(255, 255, 255, 0.03)",
+                        "on-surface": "#e1dfff",
+                        "on-surface-variant": "#c7c4d7",
+                        "on-primary-container": "#0d0096",
+                        "on-tertiary-container": "#2a2931",
+                        "surface-variant": "#32324d",
+                        "on-tertiary-fixed": "#1b1b23",
+                        "on-secondary-container": "#5b3800",
+                        "tertiary": "#c8c5d0",
+                        "inverse-primary": "#494bd6",
+                        "glassBorder": "rgba(255, 255, 255, 0.1)",
+                        "surface-dim": "#10112a",
+                        "secondary-fixed": "#ffddb8",
+                        "secondary": "#ffb95f",
+                        "background": "#10112a",
+                        "outline": "#908fa0"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-sm": "8px",
+                        "margin-screen": "24px",
+                        "stack-md": "16px",
+                        "gutter": "16px",
+                        "stack-lg": "32px",
+                        "touch-target-min": "48px",
+                        "touch-target-large": "56px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Plus Jakarta Sans"],
+                        "caption": ["Plus Jakarta Sans"],
+                        "body-base": ["Nunito Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Bangers"],
+                        "display": ["Bangers"],
+                        "body-lg": ["Nunito Sans"],
+                        "headline-xl": ["Bangers"]
+                    },
+                    "fontSize": {
+                        "label-md": ["15px", { "lineHeight": "20px", "fontWeight": "600" }],
+                        "caption": ["11px", { "lineHeight": "14px", "fontWeight": "400" }],
+                        "body-base": ["17px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-sm": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+                        "headline-lg": ["24px", { "lineHeight": "32px", "fontWeight": "400" }],
+                        "display": ["48px", { "lineHeight": "56px", "fontWeight": "400" }],
+                        "body-lg": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-xl": ["30px", { "lineHeight": "38px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        
+        .nebula-bg {
+            background: 
+                radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(238, 152, 0, 0.1), transparent 25%),
+                #05051e;
+        }
+        
+        .glow-indigo {
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-base min-h-screen nebula-bg relative overflow-x-hidden pb-[120px] md:pb-0">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center px-margin-screen h-touch-target-large w-full z-50 bg-background/80 backdrop-blur-lg fixed top-0 w-full transition-transform duration-300">
+<button class="w-touch-target-min h-touch-target-min flex items-center justify-center text-primary hover:opacity-80 active:scale-95 transition-transform rounded-full">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+</button>
+<h1 class="font-display text-headline-lg text-primary text-center flex-1">Infinity Heroes</h1>
+<button class="w-touch-target-min h-touch-target-min flex items-center justify-center text-primary hover:opacity-80 active:scale-95 transition-transform rounded-full">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">face_6</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-[80px] md:pt-[100px] px-0 w-full max-w-7xl mx-auto flex flex-col gap-stack-lg">
+<!-- Hero Discovery Banner -->
+<section class="px-margin-screen">
+<div class="relative w-full h-[200px] md:h-[300px] rounded-[32px] overflow-hidden glassBorder border border-glassBorder shadow-[0_0_30px_rgba(99,102,241,0.2)]">
+<img class="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-screen" data-alt="A magical cosmic landscape for children. The scene features glowing stars, nebulae, and floating islands in space. The colors are vibrant deep blues, indigos, and warm golden oranges. The style is 3D illustration, soft, welcoming, and slightly cartoonish, perfect for a bedtime story setting. The lighting is ethereal and soft." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmSU3uL0LxNubjQztdBbC-mUFRoy3Y-b2M3D-7umWu7hReTuhXj--PekclI9A-Jz5k_JTuu3MGKc3LSki2Ru-pHJBZtxwlFxj_9CcKOa0O7A5x8OPudaMq4OEHgw_DOpqAlOXxcXI2jkKPdd2lS9B6HzpMX6q4MouEg00DOecFYlKnh4PKBsEAWAgOmhvl83mFXqRQkdQhkyzF4BeKJRcUEcbfZkXCjXtbGOfWs7tkc2TYTzUOM69HRybYNuzMiqQLv0AmML5RQlE"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-low to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-stack-md flex flex-col gap-stack-sm w-full">
+<div class="inline-flex items-center gap-2 bg-glass backdrop-blur-md px-4 py-1 rounded-full w-max border border-glassBorder">
+<span class="material-symbols-outlined text-secondary text-sm" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="font-label-sm text-label-sm text-secondary">Featured Story</span>
+</div>
+<h2 class="font-headline-xl text-headline-xl text-on-surface">The Boy Who Caught a Star</h2>
+<p class="font-body-base text-body-base text-on-surface-variant max-w-md hidden md:block">Join Leo on an adventure across the galaxy to return a fallen star to its constellation.</p>
+</div>
+</div>
+</section>
+<!-- New Arrivals Carousel -->
+<section class="flex flex-col gap-stack-md">
+<div class="px-margin-screen flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-accentDim flex items-center justify-center glow-indigo">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">rocket_launch</span>
+</div>
+<h3 class="font-headline-lg text-headline-lg text-on-surface">New Arrivals</h3>
+</div>
+<div class="flex overflow-x-auto no-scrollbar px-margin-screen gap-stack-md pb-4 snap-x">
+<!-- Card 1 -->
+<div class="flex-none w-[140px] md:w-[180px] snap-start flex flex-col gap-2 group cursor-pointer">
+<div class="w-full aspect-square rounded-3xl overflow-hidden relative border border-glassBorder shadow-[0_0_15px_rgba(128,131,255,0.1)] group-hover:shadow-[0_0_25px_rgba(128,131,255,0.3)] transition-shadow duration-300">
+<img class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" data-alt="A cute astronaut dog floating in deep space. The dog is wearing a retro-futuristic space helmet. The background is a dark starry night with glowing indigo nebulae. The style is gentle 3D animation, soft lighting, child-friendly, no sharp edges." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHemjcFVQty3bEzUQBmwEpkrUu6d36cFYYIcnjAkSJ6Clv-fAOrZeY0zFKKNiL4BnSxLyc2L-8O3nW3wAzCwNXC_imd1QNVmtwL49VxYDtjMSwLUBuOOa8IHJC4BfhJNK6-BXoKbglomE15C2L2ut8xO5Uyjt3NaBPPxAioBUkXn6AYRYm3LsRcHKEuQz1us7Jkg3SOU521FBQr3LrvukMvHGa7uloGDUwAgCaKINJx3XPOZRl848UtarqXC3Y0pkDDv_Z4VonA-I"/>
+<div class="absolute top-2 right-2 w-8 h-8 rounded-full bg-surface-container/60 backdrop-blur-md flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface text-sm">play_arrow</span>
+</div>
+</div>
+<h4 class="font-label-md text-label-md text-on-surface truncate">Astro Pups</h4>
+<span class="font-caption text-caption text-textMuted">5 mins</span>
+</div>
+<!-- Card 2 -->
+<div class="flex-none w-[140px] md:w-[180px] snap-start flex flex-col gap-2 group cursor-pointer">
+<div class="w-full aspect-square rounded-3xl overflow-hidden relative border border-glassBorder shadow-[0_0_15px_rgba(128,131,255,0.1)] group-hover:shadow-[0_0_25px_rgba(128,131,255,0.3)] transition-shadow duration-300">
+<img class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" data-alt="A glowing blue planet with friendly rings. The planet has a subtle smile face formed by craters. Surrounding it are small glowing star particles. Deep space background, high contrast, gentle lighting, perfect for a children's sci-fi story cover." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBz2xEBaRvwT_gIR5W88HRz6xY5TPjJiSO9rERAXFvCzpEOqOC2el81Q9oOJv2cMPuCwGLszvoHV1yzXj_t-XCEdiJmLm2kb6MWeYOUnq_z3K2XZw7XBC3_-TAMoxM40NG6QeQiaHFxfZkLe8f21OLLetVZYr7EyDlEXje_4zRR-S7n-vePc09yPbTAJux6KXZRsqBL11_i440hOTKMUrTTDpAcs-qqMysmUqPT8WUV0dcEMycvGLiWnR1QjNkHn1Gz04YHQzzUGcQ"/>
+</div>
+<h4 class="font-label-md text-label-md text-on-surface truncate">Planet Giggles</h4>
+<span class="font-caption text-caption text-textMuted">8 mins</span>
+</div>
+<!-- Card 3 -->
+<div class="flex-none w-[140px] md:w-[180px] snap-start flex flex-col gap-2 group cursor-pointer">
+<div class="w-full aspect-square rounded-3xl overflow-hidden relative border border-glassBorder shadow-[0_0_15px_rgba(128,131,255,0.1)] group-hover:shadow-[0_0_25px_rgba(128,131,255,0.3)] transition-shadow duration-300">
+<img class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" data-alt="A friendly robotic owl perched on a crescent moon. The owl has large glowing eyes and soft metallic feathers. The moon is bright yellow-gold against a dark indigo starry night. Soft, 3D animated style, warm and inviting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5CJdNp2Xw118e-2CGSyLc2r8dQYOgomw1C6TS4u6zyKqehDq2pa8K6vg9y8WZwIHMwRQQxI1GhG9gQ1Txg8RGGYQ5-8sXm3HwbW7OPrA4TdwcDMIj51yOsvFNEzevpjrtiq3rSDRy8UPBMlEK19EJbm8yGnW6yNs7PklkcIcYnafc1qtjFWFpXNHyivUeac85-2SnmHEYJaVZcUxarQ5tN7oMpOuGCWGSk-N0nGk8LfwaoDJxkDTxQxtiyifxL54KP42TA0BAxvg"/>
+</div>
+<h4 class="font-label-md text-label-md text-on-surface truncate">The Moon Owl</h4>
+<span class="font-caption text-caption text-textMuted">12 mins</span>
+</div>
+</div>
+</section>
+<!-- All Crafted Carousel -->
+<section class="flex flex-col gap-stack-md mt-4">
+<div class="px-margin-screen flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-[rgba(238,152,0,0.2)] flex items-center justify-center shadow-[0_0_20px_rgba(238,152,0,0.3)]">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">magic_button</span>
+</div>
+<h3 class="font-headline-lg text-headline-lg text-on-surface">All Crafted</h3>
+</div>
+<div class="flex overflow-x-auto no-scrollbar px-margin-screen gap-stack-md pb-4 snap-x">
+<!-- Crafted Card 1 -->
+<div class="flex-none w-[140px] md:w-[180px] snap-start flex flex-col gap-2 group cursor-pointer">
+<div class="w-full aspect-square rounded-3xl overflow-hidden relative border border-glassBorder shadow-[0_0_15px_rgba(128,131,255,0.1)] group-hover:shadow-[0_0_25px_rgba(128,131,255,0.3)] transition-shadow duration-300">
+<img class="w-full h-full object-cover grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500" data-alt="A magical glowing book opening to reveal a swirling galaxy. Soft blue and purple light emits from the pages. The setting is a dark, cozy room. The aesthetic is highly magical, detailed 3D render, soft child-friendly illumination." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAJbftJCXV-t_76XZJ6G6SaRoqPI7-UEfRHZh1dM9Kagh9wGJrCUu25ZdEK_h90zu-eMoYmtmKW8r7bD_29mGvbrd_AoH7hMzoQt-akLm6KPvUjrzP4OVHrwkHnT5bj779w7TB1FBndiV1-EeTDFJMs_69CiMW-k7mYENxxPo28o48iIiedw2HwcxJh7r-cBDaNRK69kz-M_bKe5hCR6et0FbjJQJea1ddxqQrKYZqQ6WiKf9V2ci8iINCeRLvHBMjvgBPVHGBuuw"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-highest/80 to-transparent flex items-end p-3">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-secondary text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-sm text-label-sm text-on-surface">4.9</span>
+</div>
+</div>
+</div>
+<h4 class="font-label-md text-label-md text-on-surface truncate">Galaxy Book</h4>
+</div>
+<!-- Crafted Card 2 -->
+<div class="flex-none w-[140px] md:w-[180px] snap-start flex flex-col gap-2 group cursor-pointer">
+<div class="w-full aspect-square rounded-3xl overflow-hidden relative border border-glassBorder shadow-[0_0_15px_rgba(128,131,255,0.1)] group-hover:shadow-[0_0_25px_rgba(128,131,255,0.3)] transition-shadow duration-300">
+<img class="w-full h-full object-cover grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-500" data-alt="Earth seen from space but rendered in a cute, soft 3D style. The oceans are bright cyan and landmasses are vibrant green. Small cartoon clouds float above. Dark space background with subtle starry blur. Friendly bedtime vibe." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTmd7d9ASvjMdacYzVhhGxMprnpKUE9cHTQV4IqcTTPQVB5s0yZ3Ean8dyPcJpw2xoF_IsI8AcvJLMymkVPXLE1uaddEAbRYJ66uW27V64lOIo3jbMBBgA7Hz_txVjYct7DLIZrXvnw3Xk0bCDLaeEP653g3v9_1qR3A7WdztQTzg4XYbCSBxtCLUwaWt4nyC4RdGx74ieuGJfGOWaK3Aexnj8AEouEdNM8NxHPSURZ5ReOYqBSh9Uvl3wnJ6_CEUxrIoGii8cZIE"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-highest/80 to-transparent flex items-end p-3">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-secondary text-sm" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-label-sm text-label-sm text-on-surface">4.7</span>
+</div>
+</div>
+</div>
+<h4 class="font-label-md text-label-md text-on-surface truncate">Earth's Lullaby</h4>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-gutter pb-8 pt-4 bg-surface-container/30 backdrop-blur-xl rounded-t-xl md:hidden shadow-[0_-8px_24px_rgba(192,193,255,0.1)]">
+<!-- Inactive: Home -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors w-touch-target-min h-touch-target-min">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">home</span>
+<span class="font-label-md text-label-md mt-1">Home</span>
+</button>
+<!-- Active: Stories (Discovery) -->
+<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-6 py-2 shadow-[0_0_15px_rgba(128,131,255,0.4)] scale-90 duration-200 w-auto h-touch-target-min">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">auto_stories</span>
+<span class="font-label-md text-label-md mt-1">Stories</span>
+</button>
+<!-- Inactive: Friends -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors w-touch-target-min h-touch-target-min">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">stars</span>
+<span class="font-label-md text-label-md mt-1">Friends</span>
+</button>
+</nav>
+<!-- Desktop Nav Cluster (Hidden on mobile) -->
+<div class="hidden md:flex fixed top-0 right-margin-screen h-touch-target-large items-center gap-stack-md z-[60]">
+<button class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md px-4 py-2 rounded-full">Home</button>
+<button class="bg-primary-container text-on-primary-container rounded-full px-6 py-2 font-label-md text-label-md shadow-[0_0_15px_rgba(128,131,255,0.4)]">Stories</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md px-4 py-2 rounded-full">Friends</button>
+</div>
+</body></html>

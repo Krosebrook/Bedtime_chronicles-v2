@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>Infinity Heroes - Story Library</title>
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&amp;family=Nunito+Sans:wght@400;600&amp;family=Plus+Jakarta+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-secondary": "#472a00",
+                        "surface-container": "#1d1d37",
+                        "on-surface-variant": "#c7c4d7",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary-container": "#5b3800",
+                        "background": "#10112a",
+                        "primary-fixed": "#e1e0ff",
+                        "on-primary-fixed": "#07006c",
+                        "tertiary-container": "#928f9a",
+                        "elevated": "#141430",
+                        "on-error": "#690005",
+                        "secondary": "#ffb95f",
+                        "primary": "#c0c1ff",
+                        "surface-dim": "#10112a",
+                        "inverse-surface": "#e1dfff",
+                        "tertiary": "#c8c5d0",
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "on-tertiary-fixed": "#1b1b23",
+                        "on-background": "#e1dfff",
+                        "error": "#ffb4ab",
+                        "secondary-container": "#ee9800",
+                        "error-container": "#93000a",
+                        "accentDim": "rgba(99, 102, 241, 0.2)",
+                        "surface-container-low": "#191933",
+                        "on-primary": "#1000a9",
+                        "surface-container-lowest": "#0b0b25",
+                        "surface-container-highest": "#32324d",
+                        "surface": "#0d0d2b",
+                        "glass": "rgba(255, 255, 255, 0.03)",
+                        "inverse-primary": "#494bd6",
+                        "inverse-on-surface": "#2e2e49",
+                        "secondary-fixed": "#ffddb8",
+                        "on-tertiary-container": "#2a2931",
+                        "surface-variant": "#32324d",
+                        "outline": "#908fa0",
+                        "outline-variant": "#464554",
+                        "on-surface": "#e1dfff",
+                        "surface-container-high": "#272742",
+                        "primary-container": "#8083ff",
+                        "on-tertiary-fixed-variant": "#47464f",
+                        "on-secondary-fixed": "#2a1700",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "tertiary-fixed": "#e5e1ed",
+                        "glassBorder": "rgba(255, 255, 255, 0.1)",
+                        "on-tertiary": "#302f38",
+                        "surface-tint": "#c0c1ff",
+                        "on-primary-container": "#0d0096",
+                        "tertiary-fixed-dim": "#c8c5d0",
+                        "on-secondary-fixed-variant": "#653e00",
+                        "textMuted": "#8899aa",
+                        "secondary-fixed-dim": "#ffb95f",
+                        "surface-bright": "#363752"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "stack-sm": "8px",
+                        "margin-screen": "24px",
+                        "gutter": "16px",
+                        "touch-target-large": "56px",
+                        "touch-target-min": "48px",
+                        "stack-md": "16px",
+                        "stack-lg": "32px"
+                    },
+                    fontFamily: {
+                        "headline-lg": ["Bangers"],
+                        "caption": ["Plus Jakarta Sans"],
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "headline-xl": ["Bangers"],
+                        "body-lg": ["Nunito Sans"],
+                        "body-base": ["Nunito Sans"],
+                        "display": ["Bangers"],
+                        "label-md": ["Plus Jakarta Sans"]
+                    },
+                    fontSize: {
+                        "headline-lg": ["24px", { "lineHeight": "32px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["20px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "caption": ["11px", { "lineHeight": "14px", "fontWeight": "400" }],
+                        "label-sm": ["13px", { "lineHeight": "18px", "fontWeight": "500" }],
+                        "headline-xl": ["30px", { "lineHeight": "38px", "fontWeight": "400" }],
+                        "body-lg": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-base": ["17px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display": ["48px", { "lineHeight": "56px", "fontWeight": "400" }],
+                        "label-md": ["15px", { "lineHeight": "20px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Cosmic Background Effects */
+        .stars {
+            background-image: 
+                radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 40px 70px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 50px 160px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 90px 40px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 130px 80px, #c0c1ff, rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 160px 120px, #ffffff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            animation: twinkle 5s infinite linear;
+        }
+
+        .nebula {
+            background: radial-gradient(circle at 50% 0%, rgba(128, 131, 255, 0.15) 0%, transparent 60%),
+                        radial-gradient(circle at 0% 100%, rgba(238, 152, 0, 0.1) 0%, transparent 50%);
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.7; transform: translateY(0); }
+            50% { opacity: 1; transform: translateY(-10px); }
+            100% { opacity: 0.7; transform: translateY(0); }
+        }
+
+        /* Glassmorphism utilities */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Cosmic Book Spine effect */
+        .cosmic-book {
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .cosmic-book:active {
+            transform: scale(0.98);
+        }
+        .cosmic-book::before {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 0;
+            bottom: 0;
+            width: 10px;
+            background: linear-gradient(90deg, rgba(0,0,0,0.6), transparent);
+            border-top-left-radius: 12px;
+            border-bottom-left-radius: 12px;
+            z-index: 10;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body-base min-h-screen relative overflow-x-hidden selection:bg-primary/30">
+<!-- Atmospheric Background Layers -->
+<div class="fixed inset-0 stars opacity-50 pointer-events-none z-0"></div>
+<div class="fixed inset-0 nebula pointer-events-none z-0"></div>
+<!-- TopAppBar -->
+<header class="docked full-width top-0 bg-transparent flex justify-between items-center px-margin-screen h-touch-target-large w-full z-50 sticky backdrop-blur-lg pt-safe pb-4">
+<button aria-label="Go Back" class="w-touch-target-min h-touch-target-min flex items-center justify-center rounded-full glass-panel text-primary hover:opacity-80 active:scale-95 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+</button>
+<h1 class="font-display text-headline-lg-mobile md:text-headline-lg text-primary tracking-wide drop-shadow-[0_0_10px_rgba(192,193,255,0.5)]">Infinity Heroes</h1>
+<button aria-label="Profile" class="w-touch-target-min h-touch-target-min flex items-center justify-center rounded-full glass-panel text-primary hover:opacity-80 active:scale-95 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">face_6</span>
+</button>
+</header>
+<!-- Main Canvas -->
+<main class="relative z-10 px-margin-screen pb-[120px] pt-stack-sm flex flex-col gap-stack-lg max-w-4xl mx-auto">
+<!-- Search & Filter Bar -->
+<section class="flex flex-col gap-stack-md">
+<div class="relative w-full h-touch-target-min">
+<div class="absolute inset-y-0 left-4 flex items-center pointer-events-none text-tertiary">
+<span class="material-symbols-outlined text-xl">search</span>
+</div>
+<input class="w-full h-full pl-12 pr-4 rounded-xl glass-panel bg-surface-container/50 text-on-surface placeholder:text-tertiary border-glassBorder focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none font-body-base transition-colors" placeholder="Search for a magical tale..." type="text"/>
+</div>
+<!-- Categories -->
+<div class="flex gap-gutter overflow-x-auto snap-x hide-scrollbar pb-2 pt-2 -mx-margin-screen px-margin-screen">
+<button class="flex flex-col items-center gap-2 snap-center group">
+<div class="w-20 h-24 rounded-lg overflow-hidden border border-glassBorder shadow-[0_0_15px_rgba(192,193,255,0.2)] group-hover:scale-105 transition-transform relative">
+<img alt="A breathtaking view of a vibrant nebula in deep space. Brilliant hues of purple, pink, and bright glowing stars scatter across the dark cosmic void, creating an ethereal and highly magical atmosphere." class="w-full h-full object-cover" data-alt="A breathtaking view of a vibrant nebula in deep space. Brilliant hues of purple, pink, and bright glowing stars scatter across the dark cosmic void, creating an ethereal and highly magical atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWORg9KzRx9qSrM1mQm_Df9D7K4YkI8OOTxvQhiYmS18SUq2K0IpI2EMuDCuq9GuEJF38ODHziZ2VMCm2-DYfwV7h-IaoRRFZmN9HaXI1qLo9u89fEInM0jQ8KMi4N-BX-8UZ_IhRlm0Xi_PFk2OKFuofB-SkzSluiXtt9gjBkwFuf7M_YSztcjEi8vlBQHgNZpy1V_2hTs1Ey49ewl43oXkz-qPIr_8jkuTVI7Iu53EWOYJUUp41_d80Xqhi9SohgTehhmeK4W7I"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface group-hover:text-primary transition-colors">Cosmic</span>
+</button>
+<button class="flex flex-col items-center gap-2 snap-center group">
+<div class="w-20 h-24 rounded-lg overflow-hidden border border-glassBorder shadow-[0_0_15px_rgba(255,185,95,0.2)] group-hover:scale-105 transition-transform relative">
+<img alt="An open antique book resting on a dark surface in a mystical forest. A brilliant, magical light emanates from its pages, glowing in teal and gold, illuminating the surrounding trees with a fantastical aura." class="w-full h-full object-cover" data-alt="An open antique book resting on a dark surface in a mystical forest. A brilliant, magical light emanates from its pages, glowing in teal and gold, illuminating the surrounding trees with a fantastical aura." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDIFCMA83HIjml4MFLflG6MqnGz2ItxSY9sS3XXvjdVETNTeLF5AsF11BcB88hnBeCBS0MaDk9Z2-IP8Wm2-Vl4JZNAlUcemPtvBGUHnEyz0occP9uo7MpqfmQIQP6GGoLM0O59dHMjgfjxVFjtEHUpWYnHXUoYhRbm0p93ElQGgS153nZuP3a2Xm-asXLM-tl8S9xFolozJM5FCJ5iLIUZupVEZCgQbnsxcOIuTW-1myE_co9eh83x8E1RUknZzbeUCiSwqNciHQ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface group-hover:text-primary transition-colors">Magical</span>
+</button>
+<button class="flex flex-col items-center gap-2 snap-center group">
+<div class="w-20 h-24 rounded-lg overflow-hidden border border-glassBorder shadow-[0_0_15px_rgba(200,197,208,0.2)] group-hover:scale-105 transition-transform relative">
+<img alt="A majestic snow-capped mountain peak standing tall against a dark, starry night sky. The scene is cold but serene, with a deep blue tint and a dusting of glittering snow resembling a winter wonderland." class="w-full h-full object-cover" data-alt="A majestic snow-capped mountain peak standing tall against a dark, starry night sky. The scene is cold but serene, with a deep blue tint and a dusting of glittering snow resembling a winter wonderland." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPyiIuJXVAEJvYGBgUSrMFIYW1CKrsyzi29Z7jYljH9erpnP8ukGD5-NC7tiZ1D7xA6lfqoign3fzvsXouInKUnevrJhhaRRMI8clolw_fBGyQW4lbdYMzZc89EOQgM1S5cyYNib6GHkyCxLXy2OwRLmNivUFWcgP0ijLPL7KeB8aw0JkgSU1WfeAmaoxOCb6lD7dv2c_Ltwl2xGBufjOoJoPNp1WHl8G6EGsKY9_A_8zNAV7rm-rdRyr9XKj1i2Ji0Yik3_cYIa0"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface group-hover:text-primary transition-colors">Winter</span>
+</button>
+<button class="flex flex-col items-center gap-2 snap-center group">
+<div class="w-20 h-24 rounded-lg overflow-hidden border border-glassBorder shadow-[0_0_15px_rgba(144,143,160,0.2)] group-hover:scale-105 transition-transform relative">
+<img alt="An underwater scene showing ruins of an ancient, fantastical castle submerged in crystal clear azure water. Rays of sunlight pierce through the surface, illuminating the mystical aquatic structures and swimming marine life." class="w-full h-full object-cover" data-alt="An underwater scene showing ruins of an ancient, fantastical castle submerged in crystal clear azure water. Rays of sunlight pierce through the surface, illuminating the mystical aquatic structures and swimming marine life." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCuD124S4_pvUBAOzdv89AA9oLyZe8EcXBOCyvpEt5I85XlTP3_QA2p-NnuFstRHmL_GjtvaPgMoX5rag2OfCYBFazQTTKyoMsRAj_tnUb1MCaGdz__GBPNs0kTBHyF7EN4Sy83Iym6SfHRFJjb7JiwjjUPTr9Ri_WMiYJgLNfO7mVUSZ6qaSVq3W5UgCuQsESluE345T6PE7fxiihN_86PNTEOJjVR8R89P2WMV4E6nNh0Wt21DnpS5PbxG5VpyOMu6dm0O3VViIU"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface group-hover:text-primary transition-colors">Oceanic</span>
+</button>
+</div>
+</section>
+<!-- Tabs -->
+<nav aria-label="Library Tabs" class="flex border-b border-glassBorder">
+<button class="flex-1 pb-3 text-center font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors">New Arrivals</button>
+<button class="flex-1 pb-3 text-center font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-colors">Favorites</button>
+<button class="flex-1 pb-3 text-center font-label-md text-label-md text-primary border-b-2 border-primary">All Crafted</button>
+</nav>
+<!-- Library Grid (Bento style for top items, then list) -->
+<section class="flex flex-col gap-stack-md">
+<!-- Featured Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- Featured Item 1 -->
+<article class="cosmic-book rounded-2xl overflow-hidden glass-panel flex flex-col min-h-[300px] relative group cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_0_25px_rgba(192,193,255,0.4)]">
+<div class="absolute top-4 left-4 z-20 bg-inverse-primary text-on-primary font-label-sm text-label-sm px-3 py-1 rounded-full flex items-center gap-1 shadow-lg">
+<span class="material-symbols-outlined text-[14px]">star</span> Editor's Pick
+                    </div>
+<div class="absolute inset-0 z-0">
+<img alt="A massive, ethereal whale swimming through a vivid, sparkling cosmic nebula. The scene is dominated by deep purples and bright starlight, giving a sense of awe and gentle giant magic in outer space." class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A massive, ethereal whale swimming through a vivid, sparkling cosmic nebula. The scene is dominated by deep purples and bright starlight, giving a sense of awe and gentle giant magic in outer space." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBj7IEt78Op0mBu6m-LREbbmbNUnIEgLbUyGfHbFsH-6f2AKhE--aGLX_0GY8StSsxL5sZvazO-udV_AYJvymSotEEwL6E5yclOrewC8hPlSiivlQuTENi7_cN3VykV7G58A0eOOh-izmTpBG_X_dId1YgFWhn223P1PD39GMjc5oyuyGK_T0Z5oOGWwmmETr-vJqTMKrLJFK_-zfHDQXuT85z6bSBaoXzmeVpfZZtElTrohzh-eVa_5bS_n_bvFaENaJN26CGN2wg"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent"></div>
+</div>
+<div class="relative z-10 flex flex-col justify-end h-full p-6 pb-8">
+<h2 class="font-display text-headline-xl text-on-surface mb-2 drop-shadow-md">The Starry Whales</h2>
+<div class="flex items-center gap-4 text-tertiary font-caption text-caption">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-secondary">menu_book</span> 12 min read</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-primary">auto_awesome</span> Cosmic</span>
+</div>
+<!-- Progress -->
+<div class="mt-4 w-full h-1.5 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-3/4 rounded-full shadow-[0_0_8px_rgba(255,185,95,0.8)]"></div>
+</div>
+</div>
+</article>
+<!-- Featured Item 2 -->
+<article class="cosmic-book rounded-2xl overflow-hidden glass-panel flex flex-col min-h-[300px] relative group cursor-pointer shadow-[0_4px_20px_rgba(0,0,0,0.3)] hover:shadow-[0_0_25px_rgba(255,185,95,0.4)]">
+<div class="absolute inset-0 z-0">
+<img alt="A surreal landscape featuring a giant tree where the leaves look like fluffy, pink cotton candy clouds. The background is a soft, dreamy gradient of pastel pinks and purples, creating a sweet, whimsical atmosphere." class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A surreal landscape featuring a giant tree where the leaves look like fluffy, pink cotton candy clouds. The background is a soft, dreamy gradient of pastel pinks and purples, creating a sweet, whimsical atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhCcUI2vvvsHTkXfCU8ooE4mdZZeAvy4kDD82jhfwQBMzyhjWZI7uwuQ9eaZ5411UrLr2pFrwqG2N7xeosnTC5MkrTy01_n3STOsQkIVRwO-C-xR2zleocEAEtTwKWnHFXMADaGbVb-JThI0ky4t1taEwAgTR9aCqIaIsxIusRPT99JaPA-byy5QSnQwD4IBuo3_gZSITQFhNA31ZYdvkoRWSt1x1X6kxuXwZEuuFXxxJD0oCsMI9kcDBCa30hw1SoYtPPM3wRzXE"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent"></div>
+</div>
+<div class="relative z-10 flex flex-col justify-end h-full p-6 pb-8">
+<h2 class="font-display text-headline-xl text-on-surface mb-2 drop-shadow-md">The Candy Cloud Kingdom</h2>
+<div class="flex items-center gap-4 text-tertiary font-caption text-caption">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-secondary">menu_book</span> 8 min read</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px] text-primary">auto_awesome</span> Dreamy</span>
+</div>
+</div>
+</article>
+</div>
+<!-- List Items (Side-profile spine look) -->
+<div class="flex flex-col gap-stack-sm mt-4">
+<!-- Book Item -->
+<article class="cosmic-book group flex items-center p-3 rounded-xl glass-panel bg-surface-container/40 hover:bg-surface-container/60 cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(192,193,255,0.2)]">
+<!-- Spine visual -->
+<div class="w-16 h-20 rounded-md overflow-hidden shrink-0 relative border border-glassBorder shadow-[inset_2px_0_5px_rgba(255,255,255,0.2)]">
+<img alt="A glowing blue orb resting on a mossy forest floor at night. The orb emits a gentle, magical light that illuminates the surrounding tiny plants and mushrooms in a deep, enchanted woodland setting." class="w-full h-full object-cover" data-alt="A glowing blue orb resting on a mossy forest floor at night. The orb emits a gentle, magical light that illuminates the surrounding tiny plants and mushrooms in a deep, enchanted woodland setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuByshHM_MlIi2jskYTPKwOfs_849I-VhdZB5c_QpqSxmq84lj3FmDN96uLBPRy3RsH2m4AaWKKAEtHq_KFsl5RzV2cpuiD8c3VjQYMwA0IvvLC-jtG7jBjduoKIOIQCsYTRNb9xuNHbF3bXoXEpZavLLPRvxCOnD2qPHzsT4gFeK4AYf4TUqI26Ve59JsVSM42najLp83kIoIkbCq2WOIj28HJ5kq1X-03gyJwbRRiZNuAz9LDSgNPjeQLkpomDRWVm6GbSGKHTipM"/>
+<div class="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent"></div>
+</div>
+<div class="ml-4 flex-grow flex flex-col justify-center">
+<h3 class="font-display text-headline-lg-mobile text-on-surface mb-1 group-hover:text-primary transition-colors">The Glowing Orb</h3>
+<div class="flex items-center gap-3 text-tertiary font-caption text-caption">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[12px] text-secondary">menu_book</span> 5 min read</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[12px] text-primary">school</span> Learned 3 words</span>
+</div>
+<!-- Progress -->
+<div class="mt-2 w-full max-w-[150px] h-1 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary w-1/2 rounded-full"></div>
+</div>
+</div>
+<button aria-label="Play Story" class="w-12 h-12 flex items-center justify-center rounded-full text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_circle</span>
+</button>
+</article>
+<!-- Book Item -->
+<article class="cosmic-book group flex items-center p-3 rounded-xl glass-panel bg-surface-container/40 hover:bg-surface-container/60 cursor-pointer shadow-sm hover:shadow-[0_0_15px_rgba(192,193,255,0.2)]">
+<div class="w-16 h-20 rounded-md overflow-hidden shrink-0 relative border border-glassBorder shadow-[inset_2px_0_5px_rgba(255,255,255,0.2)]">
+<img alt="An abstract, swirling galaxy pattern with vibrant shades of teal, blue, and gold. It looks like a magical portal or an extreme close-up of a cosmic eye in deep space." class="w-full h-full object-cover" data-alt="An abstract, swirling galaxy pattern with vibrant shades of teal, blue, and gold. It looks like a magical portal or an extreme close-up of a cosmic eye in deep space." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2zswgb7DKBifI-NeMs8Ka6NnGsjptUQ6sffefkCSAGkKl4--rWNgngnq2ImZ9cukeiSUaL81LWshZNpNsTQ8hSGcwVRyR6jw5YlIWX76rSIYm7sgr7_gEHIbmV35tRnIc4L0stCktMNFV6JRn8c-DzCeXM3ZubPZZw3i-WV6mzA2l-spTC7fC2Sb1f3tiIb5HbIr8xNRAQtZOx8RnO9_KS1cHWfZOreUJr0CprVoAETpc-dmSRvR-f5q30qw3j_ACETowMIsmY64"/>
+<div class="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent"></div>
+</div>
+<div class="ml-4 flex-grow flex flex-col justify-center">
+<h3 class="font-display text-headline-lg-mobile text-on-surface mb-1 group-hover:text-primary transition-colors">Journey to Zenith</h3>
+<div class="flex items-center gap-3 text-tertiary font-caption text-caption">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[12px] text-secondary">menu_book</span> 15 min read</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[12px] text-primary">school</span> New!</span>
+</div>
+</div>
+<button aria-label="Play Story" class="w-12 h-12 flex items-center justify-center rounded-full text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_circle</span>
+</button>
+</article>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav aria-label="Main Navigation" class="fixed bottom-0 w-full z-50 flex justify-around items-center px-gutter pb-8 pt-4 bg-surface-container/30 backdrop-blur-xl shadow-[0_-8px_24px_rgba(192,193,255,0.1)] rounded-t-xl">
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors h-touch-target-large px-4 group">
+<span class="material-symbols-outlined group-active:scale-90 duration-200" style="font-variation-settings: 'FILL' 0;">home</span>
+<span class="font-label-md text-caption mt-1">Home</span>
+</button>
+<!-- Active Tab -->
+<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-6 py-2 shadow-[0_0_15px_rgba(128,131,255,0.4)] hover:text-primary transition-colors group active:scale-90 duration-200">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">auto_stories</span>
+<span class="font-label-md text-caption mt-1">Stories</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors h-touch-target-large px-4 group">
+<span class="material-symbols-outlined group-active:scale-90 duration-200" style="font-variation-settings: 'FILL' 0;">stars</span>
+<span class="font-label-md text-caption mt-1">Friends</span>
+</button>
+</nav>
+<style>
+        /* Utilities */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .pt-safe {
+            padding-top: env(safe-area-inset-top, 24px);
+        }
+    </style>
+</body></html>

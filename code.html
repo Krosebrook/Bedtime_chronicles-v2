@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Infinity Heroes - Voice Chat</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .fill-icon {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Bangers&amp;family=Nunito+Sans:wght@400;600&amp;family=Plus+Jakarta+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-fixed": "#e1e0ff",
+                    "on-surface": "#e1dfff",
+                    "error-container": "#93000a",
+                    "background": "#10112a",
+                    "surface-container-high": "#272742",
+                    "on-error-container": "#ffdad6",
+                    "on-tertiary-container": "#2a2931",
+                    "tertiary": "#c8c5d0",
+                    "outline": "#908fa0",
+                    "textMuted": "#8899aa",
+                    "primary": "#c0c1ff",
+                    "secondary": "#ffb95f",
+                    "surface-container-highest": "#32324d",
+                    "inverse-on-surface": "#2e2e49",
+                    "tertiary-container": "#928f9a",
+                    "surface-dim": "#10112a",
+                    "elevated": "#141430",
+                    "surface-variant": "#32324d",
+                    "glassBorder": "rgba(255, 255, 255, 0.1)",
+                    "on-secondary-fixed": "#2a1700",
+                    "on-secondary-fixed-variant": "#653e00",
+                    "error": "#ffb4ab",
+                    "on-tertiary-fixed": "#1b1b23",
+                    "inverse-primary": "#494bd6",
+                    "on-primary-fixed-variant": "#2f2ebe",
+                    "surface-container-lowest": "#0b0b25",
+                    "on-primary-container": "#0d0096",
+                    "on-surface-variant": "#c7c4d7",
+                    "on-primary-fixed": "#07006c",
+                    "tertiary-fixed": "#e5e1ed",
+                    "surface-tint": "#c0c1ff",
+                    "outline-variant": "#464554",
+                    "on-tertiary": "#302f38",
+                    "surface-bright": "#363752",
+                    "primary-container": "#8083ff",
+                    "surface": "#0d0d2b",
+                    "on-background": "#e1dfff",
+                    "glass": "rgba(255, 255, 255, 0.03)",
+                    "on-error": "#690005",
+                    "secondary-fixed": "#ffddb8",
+                    "secondary-fixed-dim": "#ffb95f",
+                    "on-tertiary-fixed-variant": "#47464f",
+                    "on-primary": "#1000a9",
+                    "surface-container-low": "#191933",
+                    "inverse-surface": "#e1dfff",
+                    "on-secondary": "#472a00",
+                    "on-secondary-container": "#5b3800",
+                    "accentDim": "rgba(99, 102, 241, 0.2)",
+                    "tertiary-fixed-dim": "#c8c5d0",
+                    "primary-fixed-dim": "#c0c1ff",
+                    "secondary-container": "#ee9800",
+                    "surface-container": "#1d1d37"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-sm": "8px",
+                    "stack-md": "16px",
+                    "gutter": "16px",
+                    "margin-screen": "24px",
+                    "stack-lg": "32px",
+                    "touch-target-min": "48px",
+                    "touch-target-large": "56px"
+            },
+            "fontFamily": {
+                    "body-base": ["Nunito Sans"],
+                    "body-lg": ["Nunito Sans"],
+                    "caption": ["Plus Jakarta Sans"],
+                    "display": ["Bangers"],
+                    "headline-xl": ["Bangers"],
+                    "headline-lg": ["Bangers"],
+                    "label-sm": ["Plus Jakarta Sans"],
+                    "label-md": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "body-base": ["17px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "caption": ["11px", {"lineHeight": "14px", "fontWeight": "400"}],
+                    "display": ["48px", {"lineHeight": "56px", "fontWeight": "400"}],
+                    "headline-xl": ["30px", {"lineHeight": "38px", "fontWeight": "400"}],
+                    "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "400"}],
+                    "label-sm": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                    "label-md": ["15px", {"lineHeight": "20px", "fontWeight": "600"}]
+            }
+          }
+        }
+      }
+    </script>
+<!-- Custom Animations & Styles -->
+<style>
+        body {
+            background-color: #05051e; /* Pure background from guidelines */
+            overflow: hidden; /* Prevent scrolling for immersive experience */
+        }
+
+        /* Starfield Background */
+        .starfield {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: #05051e;
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle linear infinite;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.2; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 0.2; transform: scale(0.8); }
+        }
+
+        /* Pulsing Orb Animation */
+        @keyframes pulse-ring {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        .pulsing-orb::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #c0c1ff, #ffb95f);
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+            z-index: -1;
+        }
+
+        /* Star Burst Animation for Mic */
+        @keyframes star-burst {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(192, 193, 255, 0.7); }
+            50% { transform: scale(1.1); box-shadow: 0 0 20px 10px rgba(192, 193, 255, 0.4); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(192, 193, 255, 0); }
+        }
+
+        .listening .mic-button {
+            animation: star-burst 1.5s infinite;
+            background-color: #8083ff; /* primary-container */
+        }
+
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background-color: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Swirling Stars Animation */
+        @keyframes swirl {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .swirl-icon {
+            animation: swirl 3s linear infinite;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="text-on-surface font-body-base antialiased flex flex-col h-screen">
+<!-- Deep Space Background -->
+<div class="starfield" id="starfield"></div>
+<!-- TopAppBar -->
+<!-- Content: Transactional/Task-focused, suppressed BottomNav/SideNav. Using TopAppBar as instructed. -->
+<header class="flex justify-between items-center px-margin-screen h-touch-target-large w-full z-50 bg-transparent text-primary font-headline-lg-mobile text-headline-lg-mobile docked full-width top-0 bg-background/80 backdrop-blur-lg flat no shadows">
+<!-- Leading Icon (suppressed visually as requested 'X' close button is trailing, but keeping layout balanced) -->
+<div class="w-12 h-12 flex items-center justify-center"></div>
+<!-- Headline -->
+<h1 class="font-display text-headline-lg text-primary text-center flex-1">Adventure Chat</h1>
+<!-- Trailing Icon (Close 'X') -->
+<button aria-label="Close Chat" class="w-12 h-12 flex items-center justify-center hover:opacity-80 active:scale-95 transition-transform text-primary rounded-full">
+<span class="material-symbols-outlined text-3xl">close</span>
+</button>
+</header>
+<!-- Main Content Canvas (Chat Area) -->
+<main class="flex-1 flex flex-col overflow-hidden relative px-gutter pt-stack-lg pb-[140px]">
+<!-- Center Stage: Hero Avatar Pulsing Orb -->
+<div class="flex-shrink-0 flex justify-center items-center mb-stack-lg relative mt-4">
+<div class="w-32 h-32 rounded-full relative pulsing-orb flex items-center justify-center bg-surface-container-high border-2 border-primary shadow-[0_0_30px_rgba(192,193,255,0.3)] z-10">
+<img alt="Nova Avatar" class="w-full h-full object-cover rounded-full p-1" data-alt="A friendly, glowing robotic or alien companion character avatar in a futuristic, child-friendly style. The character has large, expressive eyes and soft, rounded metallic or luminous features. Set against a deep space dark background, illuminating with soft pastel purples and warm orange glows. High quality, smooth 3D render style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBM9zopT7MDuL6ezC79eHaDh1fbfsM10-J3l8CfQQ9Jw4e37XoYjBjmoRwvxAeMFhAYpUCJLglH7dmr77n1rPgU2E-TYKeJK-Reay_SHz4WOshx_9TdSkUPZYjxJf1jfn_a-crCDI3YUkMGIEzGrSDVL_OlmiL4AOUzfpIv2KXpEIUi0uosDcwaN60WrPpOBIZbmH-j90aWZFIlPPaIge0F2wbclNbJ0rAWB-en-xUVbBc8BsZMNsOZ4dP6e7-tCkWPxEWSe7I3VTU"/>
+</div>
+</div>
+<!-- Chat History Scrollable Area -->
+<div class="flex-1 overflow-y-auto flex flex-col gap-stack-md pb-stack-lg no-scrollbar" id="chat-container">
+<!-- Hero Message (Left, Glassmorphism) -->
+<div class="flex items-start gap-stack-sm max-w-[85%]">
+<div class="glass-panel rounded-2xl rounded-tl-sm p-4 text-body-base shadow-sm relative group">
+<p>Hello space explorer! Are you ready to continue our journey to the Crystal Nebula?</p>
+<!-- Accessibility Replay Button -->
+<button aria-label="Replay message" class="absolute -right-10 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-lg">replay</span>
+</button>
+</div>
+</div>
+<!-- Child Message (Right, Starlight/Primary Color) -->
+<div class="flex items-start justify-end gap-stack-sm max-w-[85%] self-end">
+<div class="bg-primary/20 border border-primary/30 rounded-2xl rounded-tr-sm p-4 text-body-base text-primary shadow-[0_0_15px_rgba(192,193,255,0.1)]">
+<p>Yes! Let's go see the glowing rocks!</p>
+</div>
+</div>
+<!-- Hero Message 2 (Left, Glassmorphism) -->
+<div class="flex items-start gap-stack-sm max-w-[85%]">
+<div class="glass-panel rounded-2xl rounded-tl-sm p-4 text-body-base shadow-sm relative group">
+<p>Hold on tight! Activating the hyper-drive in 3... 2... 1... Whoosh!</p>
+<button aria-label="Replay message" class="absolute -right-10 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-surface-container flex items-center justify-center text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-lg">replay</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Action Area (Fixed) -->
+<div class="fixed bottom-0 left-0 w-full px-gutter pb-safe-offset bg-gradient-to-t from-background via-background/90 to-transparent pt-12 flex flex-col items-center justify-end z-40" style="padding-bottom: max(32px, env(safe-area-inset-bottom));">
+<!-- Status Text (Thinking/Listening) -->
+<div class="h-8 mb-4 flex items-center justify-center" id="status-container">
+<div class="flex items-center gap-2 text-primary font-label-md text-label-md opacity-80">
+<span class="material-symbols-outlined text-xl swirl-icon text-secondary">auto_awesome</span>
+<span>Nova is listening...</span>
+</div>
+</div>
+<!-- Giant Microphone Button -->
+<button aria-label="Hold to speak" class="w-[80px] h-[80px] rounded-full bg-primary flex items-center justify-center text-on-primary shadow-[0_0_20px_rgba(192,193,255,0.5)] active:scale-90 transition-transform duration-200 z-50 mb-4" id="mic-btn">
+<span class="material-symbols-outlined text-4xl fill-icon">mic</span>
+</button>
+</div>
+<!-- JavaScript for Interactions and Starfield -->
+<script>
+        // Generate Starfield
+        function createStars() {
+            const starfield = document.getElementById('starfield');
+            const numStars = 50;
+            
+            for (let i = 0; i < numStars; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // Random size between 1px and 3px
+                const size = Math.random() * 2 + 1;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                
+                // Random position
+                star.style.left = `${Math.random() * 100}vw`;
+                star.style.top = `${Math.random() * 100}vh`;
+                
+                // Random animation delay
+                star.style.animationDelay = `${Math.random() * 3}s`;
+                star.style.animationDuration = `${Math.random() * 2 + 2}s`;
+                
+                starfield.appendChild(star);
+            }
+        }
+
+        // Mic Interaction Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            createStars();
+
+            const micBtn = document.getElementById('mic-btn');
+            const statusContainer = document.getElementById('status-container');
+            let isListening = false;
+
+            // Toggle listening state
+            micBtn.addEventListener('click', () => {
+                isListening = !isListening;
+                
+                if (isListening) {
+                    document.body.classList.add('listening');
+                    statusContainer.innerHTML = `
+                        <div class="flex items-center gap-2 text-primary font-label-md text-label-md">
+                            <span class="material-symbols-outlined text-xl swirl-icon text-secondary">auto_awesome</span>
+                            <span>Nova is listening...</span>
+                        </div>
+                    `;
+                } else {
+                    document.body.classList.remove('listening');
+                    statusContainer.innerHTML = `
+                        <div class="flex items-center gap-2 text-tertiary font-label-md text-label-md opacity-50">
+                            <span>Tap to speak</span>
+                        </div>
+                    `;
+                    
+                    // Simulate processing state momentarily
+                    setTimeout(() => {
+                        if(!isListening) {
+                             statusContainer.innerHTML = `
+                                <div class="flex items-center gap-2 text-secondary font-label-md text-label-md">
+                                    <span class="material-symbols-outlined text-xl swirl-icon">hourglass_empty</span>
+                                    <span>Nova is thinking...</span>
+                                </div>
+                            `;
+                            // Reset back to idle after "thinking"
+                            setTimeout(() => {
+                                if(!isListening) {
+                                     statusContainer.innerHTML = `
+                                        <div class="flex items-center gap-2 text-tertiary font-label-md text-label-md opacity-50">
+                                            <span>Tap to speak</span>
+                                        </div>
+                                    `;
+                                }
+                            }, 2000);
+                        }
+                    }, 500);
+                }
+            });
+
+            // Scroll chat to bottom initially
+            const chatContainer = document.getElementById('chat-container');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        });
+    </script>
+</body></html>

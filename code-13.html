@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Stories - Infinity Heroes</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&amp;family=Nunito+Sans:wght@400;600&amp;family=Plus+Jakarta+Sans:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-low": "#191933",
+                    "primary-fixed-dim": "#c0c1ff",
+                    "secondary-container": "#ee9800",
+                    "on-primary-fixed": "#07006c",
+                    "surface-tint": "#c0c1ff",
+                    "surface-container-high": "#272742",
+                    "textMuted": "#8899aa",
+                    "accentDim": "rgba(99, 102, 241, 0.2)",
+                    "surface-container-highest": "#32324d",
+                    "on-primary-fixed-variant": "#2f2ebe",
+                    "tertiary-fixed": "#e5e1ed",
+                    "primary": "#c0c1ff",
+                    "on-background": "#e1dfff",
+                    "error": "#ffb4ab",
+                    "on-primary": "#1000a9",
+                    "on-error": "#690005",
+                    "surface-bright": "#363752",
+                    "on-error-container": "#ffdad6",
+                    "secondary-fixed-dim": "#ffb95f",
+                    "outline-variant": "#464554",
+                    "surface-container": "#1d1d37",
+                    "primary-fixed": "#e1e0ff",
+                    "inverse-on-surface": "#2e2e49",
+                    "surface": "#0d0d2b",
+                    "inverse-surface": "#e1dfff",
+                    "elevated": "#141430",
+                    "on-secondary-fixed-variant": "#653e00",
+                    "on-secondary": "#472a00",
+                    "error-container": "#93000a",
+                    "on-secondary-fixed": "#2a1700",
+                    "tertiary-container": "#928f9a",
+                    "tertiary-fixed-dim": "#c8c5d0",
+                    "surface-container-lowest": "#0b0b25",
+                    "primary-container": "#8083ff",
+                    "on-tertiary-fixed-variant": "#47464f",
+                    "on-tertiary": "#302f38",
+                    "glass": "rgba(255, 255, 255, 0.03)",
+                    "on-surface": "#e1dfff",
+                    "on-surface-variant": "#c7c4d7",
+                    "on-primary-container": "#0d0096",
+                    "on-tertiary-container": "#2a2931",
+                    "surface-variant": "#32324d",
+                    "on-tertiary-fixed": "#1b1b23",
+                    "on-secondary-container": "#5b3800",
+                    "tertiary": "#c8c5d0",
+                    "inverse-primary": "#494bd6",
+                    "glassBorder": "rgba(255, 255, 255, 0.1)",
+                    "surface-dim": "#10112a",
+                    "secondary-fixed": "#ffddb8",
+                    "secondary": "#ffb95f",
+                    "background": "#10112a",
+                    "outline": "#908fa0"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-sm": "8px",
+                    "margin-screen": "24px",
+                    "stack-md": "16px",
+                    "gutter": "16px",
+                    "stack-lg": "32px",
+                    "touch-target-min": "48px",
+                    "touch-target-large": "56px"
+            },
+            "fontFamily": {
+                    "label-md": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "caption": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "body-base": [
+                            "Nunito Sans"
+                    ],
+                    "label-sm": [
+                            "Plus Jakarta Sans"
+                    ],
+                    "headline-lg": [
+                            "Bangers"
+                    ],
+                    "display": [
+                            "Bangers"
+                    ],
+                    "body-lg": [
+                            "Nunito Sans"
+                    ],
+                    "headline-xl": [
+                            "Bangers"
+                    ]
+            },
+            "fontSize": {
+                    "label-md": [
+                            "15px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "caption": [
+                            "11px",
+                            {
+                                    "lineHeight": "14px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-base": [
+                            "17px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-sm": [
+                            "13px",
+                            {
+                                    "lineHeight": "18px",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "headline-lg": [
+                            "24px",
+                            {
+                                    "lineHeight": "32px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "display": [
+                            "48px",
+                            {
+                                    "lineHeight": "56px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-lg": [
+                            "20px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-xl": [
+                            "30px",
+                            {
+                                    "lineHeight": "38px",
+                                    "fontWeight": "400"
+                            }
+                    ]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        /* Base styles */
+        body {
+            background-color: #05051e; /* Deep space dark */
+            color: #e1dfff; /* Light text */
+            -webkit-tap-highlight-color: transparent;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Star Field Background */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: #05051e;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(0.8); }
+            50% { opacity: 0.8; transform: scale(1.2); }
+        }
+
+        /* Glassmorphism Card Style */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Subtle Glow for interactive elements */
+        .glow-hover:hover {
+            box-shadow: 0 0 15px rgba(128, 131, 255, 0.3);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="antialiased pb-[120px]">
+<!-- Dynamic Star Field (generated via JS) -->
+<div class="stars" id="starField"></div>
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-lg flex justify-between items-center px-margin-screen h-touch-target-large w-full">
+<button aria-label="Back" class="h-touch-target-min w-touch-target-min flex items-center justify-center text-primary hover:opacity-80 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[24px]">arrow_back</span>
+</button>
+<h1 class="font-display text-headline-lg text-primary text-center flex-1">
+            Infinity Heroes
+        </h1>
+<button aria-label="Profile" class="h-touch-target-min w-touch-target-min flex items-center justify-center text-primary hover:opacity-80 active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[24px]">face_6</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-[80px] px-margin-screen max-w-md mx-auto">
+<!-- Header Section -->
+<div class="mb-stack-lg mt-stack-md text-center">
+<h2 class="font-headline-xl text-headline-xl text-primary-fixed mb-stack-sm drop-shadow-[0_0_10px_rgba(192,193,255,0.3)]">Library</h2>
+<p class="font-body-base text-body-base text-on-surface-variant">Choose a bedtime adventure</p>
+</div>
+<!-- Filter / Tabs -->
+<div class="flex space-x-gutter mb-stack-lg overflow-x-auto pb-2 scrollbar-hide">
+<button class="px-6 py-3 rounded-full bg-primary-container text-on-primary-container font-label-md text-label-md shadow-[0_0_15px_rgba(128,131,255,0.4)] whitespace-nowrap min-h-touch-target-min">All Stories</button>
+<button class="px-6 py-3 rounded-full glass-card text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors whitespace-nowrap min-h-touch-target-min">Favorites</button>
+<button class="px-6 py-3 rounded-full glass-card text-on-surface-variant font-label-md text-label-md hover:text-primary transition-colors whitespace-nowrap min-h-touch-target-min">New</button>
+</div>
+<!-- Story List -->
+<div class="space-y-stack-md">
+<!-- Story Item 1 (New, Favorited) -->
+<button class="w-full text-left glass-card rounded-xl overflow-hidden relative flex items-center p-3 h-28 glow-hover transition-all active:scale-[0.98]">
+<!-- Decorative Spine/Cover Edge -->
+<div class="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-b from-primary-container to-primary"></div>
+<!-- Thumbnail -->
+<div class="w-20 h-full rounded-lg bg-surface-container overflow-hidden flex-shrink-0 ml-2 relative">
+<img alt="Fantasy space landscape" class="w-full h-full object-cover opacity-80" data-alt="A magical cosmic landscape at night with glowing purple and blue nebulas. A small, stylized rocket ship rests on a glowing crystal moon. The aesthetic is gentle, dreamlike, and suitable for a children's bedtime story illustration." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBD2EgYJNcTgQLMysSI-sqExHvtZCb4G7RLX6ZlDHskBWi2mdOw0bMqaVMfmoWfZN3LbOz_HiufCFpnXCK4flT3U5L6sxd0kRrV0luNagqP9nNMJK1_GW-essimN8zmJoonvNqYqkd4hD7Mrw3sWCvb1oz1C5Eu01qS5eoKAT7jfLOvSl7f43nfmB_L9eYy2aICo6kMc3DaqqY_SWnFDeyxnBSutbIq-6aBN7mV6EFcxlUlNjrU2XEkh1PkdnIa9GjSWa78Bu87wDc"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
+</div>
+<!-- Content -->
+<div class="ml-4 flex-1 flex flex-col justify-center pr-2">
+<div class="flex items-center justify-between mb-1">
+<span class="bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full font-label-sm text-[10px] tracking-wider uppercase drop-shadow-[0_0_5px_rgba(238,152,0,0.5)]">New</span>
+<span class="material-symbols-outlined text-error text-[20px]" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</div>
+<h3 class="font-body-lg text-body-lg text-primary-fixed truncate mb-1">The Moonlit Rocket</h3>
+<div class="flex items-center text-on-surface-variant font-caption text-caption">
+<span class="material-symbols-outlined text-[14px] mr-1">schedule</span>
+<span>12 min read</span>
+</div>
+</div>
+</button>
+<!-- Story Item 2 -->
+<button class="w-full text-left glass-card rounded-xl overflow-hidden relative flex items-center p-3 h-28 glow-hover transition-all active:scale-[0.98]">
+<div class="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-b from-secondary to-secondary-container"></div>
+<div class="w-20 h-full rounded-lg bg-surface-container overflow-hidden flex-shrink-0 ml-2 relative">
+<img alt="Glowing forest" class="w-full h-full object-cover opacity-80" data-alt="A gentle, glowing enchanted forest bathed in soft bioluminescent light. Friendly, floating light orbs hover above mossy rocks. The color palette features deep greens, soft blues, and warm gold accents, creating a calm, safe bedtime atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAd1eODP8Ucs9hmxslITKW3Wb_6O5bUFBFpAw7GrZYBDU-b1cwubm7Yb3zcR0XPdtp-y4-dqb7e8EfW-BGz8yrTrsyoRYk9h2Q8Gow39erEzDksVCF6_KB4_5lzE1kSN22pV7NGbDHZpHFYyQ4Z21yXw-yN_m-nVcfpq9fHxgoLgaKI_9xovDhPdU1ZlwmNYG0lrzE30_3mYi7yP7Uu1en5iOpA9YxGJS9dCkqIsfzXISxSX_zkdoEGN1YtqWPZSyRRdtQ2IrE2bsg"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
+</div>
+<div class="ml-4 flex-1 flex flex-col justify-center pr-2">
+<div class="flex items-center justify-end mb-1">
+<span class="material-symbols-outlined text-surface-variant text-[20px]">favorite</span>
+</div>
+<h3 class="font-body-lg text-body-lg text-primary-fixed truncate mb-1">Whispering Woods</h3>
+<div class="flex items-center text-on-surface-variant font-caption text-caption">
+<span class="material-symbols-outlined text-[14px] mr-1">schedule</span>
+<span>8 min read</span>
+</div>
+</div>
+</button>
+<!-- Story Item 3 -->
+<button class="w-full text-left glass-card rounded-xl overflow-hidden relative flex items-center p-3 h-28 glow-hover transition-all active:scale-[0.98]">
+<div class="absolute left-0 top-0 bottom-0 w-2 bg-gradient-to-b from-tertiary to-tertiary-fixed-dim"></div>
+<div class="w-20 h-full rounded-lg bg-surface-container overflow-hidden flex-shrink-0 ml-2 relative">
+<img alt="Starry sky" class="w-full h-full object-cover opacity-80" data-alt="A soft, stylized painting of the Milky Way across a deep indigo sky. A sleepy cartoon bear wearing an astronaut helmet floats peacefully among the stars. The aesthetic is deep space minimalism with soft, tactile textures perfect for toddlers." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWYKv6VZ1thjcX3fim6gXMILVlP3J4zInl0pvdPXVmQCUizIyW8qIUOhiAXiVqxvxTb_N19n6z85wsgvJlOwiw0T4hkwBB0zyk1DdgL96RtAItsQGqsR7hZi5qQrjEj3JhKvqIiBH2HIorUxKNLmTkHAeVpqQUR6r4sOBLmh7gsXRQ5YdquHjPGfUFOutTaR3hVrC0jPeBmiQKqRkABX8Djj0D5QDyqGWSim6uraVfL09Sm28aj87qX33Ex_9-9chy7NEd4nE0nes"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface to-transparent"></div>
+</div>
+<div class="ml-4 flex-1 flex flex-col justify-center pr-2">
+<div class="flex items-center justify-between mb-1">
+<!-- Spacer for alignment if no badge -->
+<div></div>
+<span class="material-symbols-outlined text-error text-[20px]" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</div>
+<h3 class="font-body-lg text-body-lg text-primary-fixed truncate mb-1">Bear's Long Sleep</h3>
+<div class="flex items-center text-on-surface-variant font-caption text-caption">
+<span class="material-symbols-outlined text-[14px] mr-1">schedule</span>
+<span>15 min read</span>
+</div>
+</div>
+</button>
+</div>
+<!-- Voice Command Hint -->
+<div class="mt-stack-lg flex justify-center pb-stack-lg">
+<div class="glass-card rounded-full px-6 py-3 flex items-center space-x-3 max-w-fit">
+<span class="material-symbols-outlined text-primary animate-pulse">mic</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Say "Read me a story"</span>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-gutter pb-8 pt-4 bg-surface-container/30 backdrop-blur-xl border-t border-glassBorder shadow-[0_-8px_24px_rgba(192,193,255,0.1)] rounded-t-xl">
+<button aria-label="Home" class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors min-h-touch-target-min min-w-[64px]">
+<span class="material-symbols-outlined mb-1">home</span>
+<span class="font-label-md text-label-md">Home</span>
+</button>
+<!-- Active Tab: Stories -->
+<button aria-current="page" aria-label="Stories" class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-6 py-2 shadow-[0_0_15px_rgba(128,131,255,0.4)] transition-all active:scale-90 duration-200 min-h-touch-target-min">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">auto_stories</span>
+<span class="font-label-md text-label-md font-display">Stories</span>
+</button>
+<button aria-label="Friends" class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors min-h-touch-target-min min-w-[64px]">
+<span class="material-symbols-outlined mb-1">stars</span>
+<span class="font-label-md text-label-md">Friends</span>
+</button>
+</nav>
+<script>
+        // Generate Star Field
+        document.addEventListener('DOMContentLoaded', () => {
+            const starField = document.getElementById('starField');
+            const numStars = 50;
+
+            for (let i = 0; i < numStars; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // Randomize position
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                
+                // Randomize size
+                const size = Math.random() * 3 + 1;
+                
+                // Randomize animation delay and duration
+                const delay = Math.random() * 5;
+                const duration = Math.random() * 3 + 2;
+
+                star.style.left = `${x}vw`;
+                star.style.top = `${y}vh`;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.animationDelay = `${delay}s`;
+                star.style.animationDuration = `${duration}s`;
+
+                starField.appendChild(star);
+            }
+        });
+    </script>
+</body></html>

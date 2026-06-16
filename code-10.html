@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>Infinity Heroes - Story Library</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&amp;family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&amp;family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline": "#908fa0",
+                        "surface-container-highest": "#32324d",
+                        "secondary": "#ffb95f",
+                        "primary": "#c0c1ff",
+                        "textMuted": "#8899aa",
+                        "background": "#10112a",
+                        "error-container": "#93000a",
+                        "primary-fixed": "#e1e0ff",
+                        "on-surface": "#e1dfff",
+                        "tertiary": "#c8c5d0",
+                        "on-tertiary-container": "#2a2931",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-high": "#272742",
+                        "glassBorder": "rgba(255, 255, 255, 0.1)",
+                        "surface-variant": "#32324d",
+                        "on-secondary-fixed": "#2a1700",
+                        "on-secondary-fixed-variant": "#653e00",
+                        "error": "#ffb4ab",
+                        "surface-dim": "#10112a",
+                        "tertiary-container": "#928f9a",
+                        "inverse-on-surface": "#2e2e49",
+                        "elevated": "#141430",
+                        "surface-tint": "#c0c1ff",
+                        "outline-variant": "#464554",
+                        "on-tertiary": "#302f38",
+                        "tertiary-fixed": "#e5e1ed",
+                        "surface": "#0d0d2b",
+                        "primary-container": "#8083ff",
+                        "surface-bright": "#363752",
+                        "on-primary-fixed-variant": "#2f2ebe",
+                        "on-tertiary-fixed": "#1b1b23",
+                        "inverse-primary": "#494bd6",
+                        "on-primary-fixed": "#07006c",
+                        "on-surface-variant": "#c7c4d7",
+                        "on-primary-container": "#0d0096",
+                        "surface-container-lowest": "#0b0b25",
+                        "surface-container-low": "#191933",
+                        "inverse-surface": "#e1dfff",
+                        "on-secondary": "#472a00",
+                        "secondary-container": "#ee9800",
+                        "primary-fixed-dim": "#c0c1ff",
+                        "surface-container": "#1d1d37",
+                        "tertiary-fixed-dim": "#c8c5d0",
+                        "on-secondary-container": "#5b3800",
+                        "accentDim": "rgba(99, 102, 241, 0.2)",
+                        "on-error": "#690005",
+                        "glass": "rgba(255, 255, 255, 0.03)",
+                        "on-background": "#e1dfff",
+                        "on-primary": "#1000a9",
+                        "on-tertiary-fixed-variant": "#47464f",
+                        "secondary-fixed": "#ffddb8",
+                        "secondary-fixed-dim": "#ffb95f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-sm": "8px",
+                        "margin-screen": "24px",
+                        "stack-md": "16px",
+                        "gutter": "16px",
+                        "touch-target-min": "48px",
+                        "stack-lg": "32px",
+                        "touch-target-large": "56px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Plus Jakarta Sans"],
+                        "headline-lg": ["Bangers"],
+                        "label-md": ["Plus Jakarta Sans"],
+                        "body-lg": ["Nunito Sans"],
+                        "body-base": ["Nunito Sans"],
+                        "headline-xl": ["Bangers"],
+                        "display": ["Bangers"],
+                        "caption": ["Plus Jakarta Sans"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                        "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "400"}],
+                        "label-md": ["15px", {"lineHeight": "20px", "fontWeight": "600"}],
+                        "body-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-base": ["17px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-xl": ["30px", {"lineHeight": "38px", "fontWeight": "400"}],
+                        "display": ["48px", {"lineHeight": "56px", "fontWeight": "400"}],
+                        "caption": ["11px", {"lineHeight": "14px", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #05051e;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(192, 193, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(192, 193, 255, 0.08) 0%, transparent 50%);
+            color: #e1dfff;
+        }
+        
+        .star-field {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -1;
+            background-image: 
+                radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 40px 70px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 50px 160px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 90px 40px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 130px 80px, #ffffff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            opacity: 0.3;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+        }
+        
+        .storybook-item {
+            position: relative;
+            background: linear-gradient(145deg, #1d1d37 0%, #10112a 100%);
+            border: 1px solid rgba(192, 193, 255, 0.15);
+            border-left: 8px solid #c0c1ff;
+            border-radius: 16px;
+            box-shadow: -4px 0 15px rgba(192, 193, 255, 0.05), inset 2px 0 4px rgba(255,255,255,0.2);
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .storybook-item:active {
+            transform: scale(0.98);
+        }
+
+        .category-pill.active {
+            background: #8083ff;
+            color: #0d0096;
+            box-shadow: 0 0 15px rgba(128,131,255,0.4);
+        }
+        
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="antialiased pb-[100px]">
+<div class="star-field"></div>
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-margin-screen h-touch-target-large bg-background/80 backdrop-blur-md pt-safe">
+<button aria-label="Search" class="w-12 h-12 flex items-center justify-center text-primary hover:bg-glass hover:text-primary transition-colors rounded-full">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">search</span>
+</button>
+<h1 class="text-headline-xl font-headline-xl text-primary drop-shadow-[0_0_10px_rgba(192,193,255,0.5)]">Infinity Heroes</h1>
+<button aria-label="Settings" class="w-12 h-12 flex items-center justify-center text-primary hover:bg-glass hover:text-primary transition-colors rounded-full">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">settings</span>
+</button>
+</header>
+<main class="pt-[calc(56px+env(safe-area-inset-top)+16px)] px-margin-screen max-w-2xl mx-auto">
+<!-- Search Bar -->
+<div class="relative mb-stack-lg">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-outline">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="block w-full pl-11 pr-4 py-4 bg-surface border border-glassBorder rounded-xl text-on-surface placeholder-outline focus:ring-2 focus:ring-primary focus:border-transparent text-body-base font-body-base" placeholder="Search for a magical tale..." type="text"/>
+</div>
+<!-- Categories -->
+<div class="flex space-x-stack-md overflow-x-auto hide-scrollbar mb-stack-lg pb-2">
+<button class="flex flex-col items-center flex-shrink-0 min-w-[72px] opacity-100 transition-transform active:scale-95">
+<div class="w-16 h-16 rounded-full glass-card flex items-center justify-center mb-2 overflow-hidden border-primary/30">
+<img alt="Cosmic nebula showing deep space purples and pinks, sparkling stars, suitable for a children's storybook app icon, high detail, vibrant." class="w-full h-full object-cover" data-alt="A vibrant, glowing purple and pink cosmic nebula filled with sparkling stars, serving as a magical category icon for a children's storybook interface. The aesthetic is deep space minimalism with bright starlight accents, high detail, and a soft immersive quality." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWSceefwMT5rzSsAHc09cVRZIwIpj3nvM6bF1DJAEdKphOnUKi3b_rrl82A5CNO2LmAm5jwMTUhKYJyI820e5sehj3KQEQ80sxFh9keW2p8-3X74Xz3z3RP67JJ8JyGfrnyV_LqwdGyR5I6XypRRGILKMY9l-Hn-h9I_uEq-eg1fxRVvcLxDPO2Cl1ifLNUJdAsujPFp24MPGnvZVbmvq6-nRN-s5uAblFbEVQbs8NTkxFKrcpv9HL7zk-2NJDMvqNPO99avelRbY"/>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface">Cosmic</span>
+</button>
+<button class="flex flex-col items-center flex-shrink-0 min-w-[72px] opacity-70 hover:opacity-100 transition-opacity active:scale-95">
+<div class="w-16 h-16 rounded-full glass-card flex items-center justify-center mb-2 overflow-hidden">
+<img alt="Magical glowing book in a dark forest, ethereal light, children's story theme." class="w-full h-full object-cover" data-alt="An ethereal, glowing magical book resting in a mysterious dark forest. Soft green and blue bioluminescent light radiates from the pages. The visual style is deep space mixed with enchanted woodland, designed for a gentle children's bedtime story app icon." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1w8alIJvUv8FkVn3nhEXusEoIJ4ocIOjAtwLyH5mslbQHfV6Kge7VeKzHp9eD11DvZdY8CPlQ-QcC8xqNjrIUR4zGqvzZbLSDfyGx8ltaE_XRq0uJ9NFKhKyelJ4w_BTeNq8mefNLRZyy4EYGtXNmFxAm_xoOfZX4SX1Vr_MGlShuUHuVYOs7kakx2smsw9SPzgtgBcGQe1n1aIEZgmpmdFzIxumohJ2iS7TYsyCeIwU_-sgWMKkVATcDAttywIu9noI6LiExHPM"/>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface">Magical</span>
+</button>
+<button class="flex flex-col items-center flex-shrink-0 min-w-[72px] opacity-70 hover:opacity-100 transition-opacity active:scale-95">
+<div class="w-16 h-16 rounded-full glass-card flex items-center justify-center mb-2 overflow-hidden">
+<img alt="Snowy mountain under a starry night sky, cold blue tones, winter magic." class="w-full h-full object-cover" data-alt="A majestic snowy mountain peak under a brilliant starry night sky. The scene uses cool, icy blue and deep navy tones, fitting a cosmic winter theme. Soft lighting and gentle details make it perfect for a children's bedtime story category icon." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwvIEIjoLF9RHFH-JPVFHlW6XAYFTVO130DZeKPkCI3VRVu-tXLaJ_cGk9Y0PevNTsCaSJIBjuBaIlxE2bjNA28lgrIiDnZ0qGB23xxpV83YbXrcL8ExPOnjI9CBuwXG0mdAIQ099X4AidXb73eZ6Hzzy1CAnrmfd936Hz8TME9sSKXss9HIA9mgEzQWB0CH2CwdRDBtroOgfFBOTqTEv5_NJfBOcfLfhwN6uREMe9QsqtvwbYtcWIvE6-5OVXQE21q1TmFK-7Csg"/>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface">Winter</span>
+</button>
+<button class="flex flex-col items-center flex-shrink-0 min-w-[72px] opacity-70 hover:opacity-100 transition-opacity active:scale-95">
+<div class="w-16 h-16 rounded-full glass-card flex items-center justify-center mb-2 overflow-hidden">
+<img alt="Underwater ocean scene, deep blue, magical light rays, fish." class="w-full h-full object-cover" data-alt="A tranquil underwater oceanic scene with deep blue waters and gentle magical light rays filtering from above. Small, friendly silhouettes of sea life swim peacefully. The style is immersive and soft, aligning with a calming cosmic deep-space aesthetic for kids." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDk5zgRkDwGKA4B9QTJHQaGj8TkyeVD4WlOjm7dufpACJ8ECD1n9PxVc5pHZvVrwXDWf2rVHGm5TNSEQ3YS2wSgGE_RwFm7PX2uFL-XaEJJlxYdsIFqkf5rtuq7eBDZc1awRbAIWuVrYvXzu0vQsAIFwvyOt8kpadMrUeyTGHrSHPD94xDcUvGKfz9uWi0mrWMrvn1eyFUfQ5Hhx3zuXCv1_2KtRYjriE-Aw5O0d7QAZpproAhb1NWUFOoK1D73xJHDCxYAUgQFyRY"/>
+</div>
+<span class="text-label-sm font-label-sm text-on-surface">Oceanic</span>
+</button>
+</div>
+<!-- Filter Tabs -->
+<div class="flex border-b border-glassBorder mb-stack-lg">
+<button class="px-4 py-3 text-label-md font-label-md text-on-surface-variant hover:text-on-surface">New Arrivals</button>
+<button class="px-4 py-3 text-label-md font-label-md text-on-surface-variant hover:text-on-surface">Favorites</button>
+<button class="px-4 py-3 text-label-md font-label-md text-primary border-b-2 border-primary">All Crafted</button>
+</div>
+<!-- Story List -->
+<div class="space-y-stack-md pb-20">
+<!-- Story Item 1 -->
+<div class="storybook-item p-4 flex items-center min-h-[96px] cursor-pointer">
+<div class="relative w-16 h-16 rounded-full overflow-hidden border-2 border-surface-bright flex-shrink-0 mr-4">
+<img alt="Cosmic whale swimming through space nebula, stars, purple and blue." class="w-full h-full object-cover" data-alt="A magnificent glowing blue whale swimming gracefully through a deep space nebula. The background is a rich mix of dark purple and vibrant starlight. The illustration is soft, immersive, and styled specifically for a high-end children's magical bedtime story." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhaPbZPTpjw6okwUjK927UCxuHZSkNzW4e6ETlXIsgsQvsfKT9r2YpSjsjOm6fkBGGhSKR-rrWrzTm8w3oCMBjyiK9TSgyrKDQko2FPeUZq9o8GeqW92rj7YNhWCh-6A6z16AmGWyvNwANblThZClf9lZ0f3tlyuWZO8bx6JeXC31dczTGvvNa9z5K4LnJjbiX-UAT1mvkdmHIWerzAoBaUXiPus6j8aTZLovTdDRkx839plKEebZnXVqna9NCQI_bS3TjfVGlGz4"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center space-x-2 mb-1">
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-primary text-on-primary tracking-wider">EDITOR'S PICK</span>
+</div>
+<h3 class="text-body-lg font-body-lg text-on-surface truncate">The Starry Whales</h3>
+<p class="text-label-sm font-label-sm text-on-surface-variant truncate">12 min read • Cosmic</p>
+</div>
+<div class="ml-2 flex-shrink-0">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">favorite</span>
+</div>
+</div>
+<!-- Story Item 2 -->
+<div class="storybook-item p-4 flex items-center min-h-[96px] cursor-pointer" style="border-left-color: #ffb95f;">
+<div class="relative w-16 h-16 rounded-full overflow-hidden border-2 border-surface-bright flex-shrink-0 mr-4">
+<img alt="Pink fluffy cloud tree on a smooth surface, dreamy pink lighting, 3d art style." class="w-full h-full object-cover" data-alt="A whimsical, dreamy 3D render of a tree made entirely of soft, pink fluffy candy-like clouds. It stands on a smooth minimalist surface under soft, glowing lighting. The aesthetic is gentle, tactile, and deeply magical, fitting a calming children's interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCArSXko9Kx3Le51Xg4y5BXo5oLBnXswfagtdMBnB3jmqyYkobPnJbpDJfW_qLvT_oKlff2jxYfcdFt_UICBhYctV9kmjtbioR9frYB94d0pbYobx0VeClb_7ird7E4DDUOo05pgDQfgvlZaemWf41qbhsCv0Vkk407bY_xIu4smhssBpN8HSMU0DtBBEwemyTyPKxX60Fes5GiWBk3ks2zU7HztsmXfSUKUOJajfcNNY_5iREXd8xrGPrlBuBf_ZTBpfE1OShg8kQ"/>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="text-body-lg font-body-lg text-on-surface truncate">The Candy Cloud Kingdom</h3>
+<p class="text-label-sm font-label-sm text-on-surface-variant truncate">8 min read • Dreamy</p>
+</div>
+<div class="ml-2 flex-shrink-0">
+<div class="w-3 h-3 rounded-full bg-secondary shadow-[0_0_8px_#ffb95f]"></div>
+</div>
+</div>
+<!-- Story Item 3 -->
+<div class="storybook-item p-4 flex items-center min-h-[96px] cursor-pointer" style="border-left-color: #c8c5d0;">
+<div class="relative w-16 h-16 rounded-full overflow-hidden border-2 border-surface-bright flex-shrink-0 mr-4">
+<img alt="Night sky full of stars over dark mountains, beautiful milky way." class="w-full h-full object-cover" data-alt="A breathtaking view of the Milky Way galaxy stretching across a deep, dark night sky over silhouetted mountains. The scene is rich with tiny glowing stars and subtle deep-space blues and purples. It conveys a sense of peaceful cosmic wonder for a bedtime story." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJ5DvS0qGQfT57BEQP0fkuLn8WOy8qzriORV96cX6p2KfbPD3y6xwwifv1LGJWlFpkrudAGEnjZb41zhIx3Vxci67IaaL7kNpUMJzFW8GMGdfKRE2PXrIXV0uqKW1EGTHlQGosYF7ElVioEYKa_Ul-YhRFMZ5b4a8SCmJlTpYGKcu9CsCHG1RYU5V0N0v4_0LKicA2xnEGuygT8gMp1aKTZAdp1xNmhhxDoVpQcrqCWYfA0dakppqSJxfRbwpWAvaDRS7vD9vTl3s"/>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="text-body-lg font-body-lg text-on-surface truncate">Journey to the Quiet Moon</h3>
+<p class="text-label-sm font-label-sm text-on-surface-variant truncate">15 min read • Cosmic</p>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 pb-safe h-20 bg-surface-container-low/60 backdrop-blur-xl rounded-t-xl shadow-[0_-4px_24px_rgba(0,0,0,0.5)] md:hidden">
+<button class="flex flex-col items-center justify-center text-on-surface-variant/70 p-2 hover:text-primary transition-all touch-target-min">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">home</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full p-2 shadow-[0_0_15px_rgba(128,131,255,0.4)] hover:text-primary transition-all active:scale-90 duration-300 touch-target-min">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">auto_stories</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant/70 p-2 hover:text-primary transition-all touch-target-min">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">mic</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant/70 p-2 hover:text-primary transition-all touch-target-min">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">favorite</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant/70 p-2 hover:text-primary transition-all touch-target-min">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">person</span>
+</button>
+</nav>
+</body></html>
