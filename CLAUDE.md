@@ -83,8 +83,8 @@ gradle/libs.versions.toml               # version catalog (single source of depe
 ```
 
 > **Note:** there is currently **no Gradle wrapper** (`gradlew` / `gradle/wrapper/`) checked
-> in. Build/test from **Android Studio**, or generate a wrapper (`gradle wrapper`) against a
-> locally installed Gradle before running the commands below.
+> in. Build/test from **Android Studio**, or invoke a locally installed **`gradle`** directly
+> (do **not** call `./gradlew`/`gradlew` — the wrapper binary is not present).
 
 ## Navigation graph (`ui/navigation/Navigation.kt`)
 
@@ -114,15 +114,14 @@ Routes: `tutorial` → `home`, then `home` fans out to `library`, `create`, `pro
 ## Common Commands (Android)
 
 ```bash
-# Generate the wrapper first if ./gradlew is absent:
-gradle wrapper
-
-./gradlew :app:assembleDebug          # build debug APK
-./gradlew :app:installDebug           # install on a connected device/emulator
-./gradlew :app:testDebugUnitTest      # JVM/Robolectric unit tests
-./gradlew :app:verifyRoborazzi        # screenshot tests (recordRoborazzi to update goldens)
-./gradlew :app:connectedAndroidTest   # instrumented (Espresso) tests
-./gradlew :app:lint                   # Android lint
+# No Gradle wrapper is committed — invoke a locally installed `gradle` directly
+# (or run these from Android Studio). Do not call ./gradlew.
+gradle :app:assembleDebug          # build debug APK
+gradle :app:installDebug           # install on a connected device/emulator
+gradle :app:testDebugUnitTest      # JVM/Robolectric unit tests
+gradle :app:verifyRoborazzi        # screenshot tests (recordRoborazzi to update goldens)
+gradle :app:connectedAndroidTest   # instrumented (Espresso) tests
+gradle :app:lint                   # Android lint
 ```
 
 Signing: `debugConfig` uses the bundled `debug.keystore`; `release` reads
