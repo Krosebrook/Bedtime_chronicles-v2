@@ -48,6 +48,11 @@ narration, sticker books, and gamification.
 
 SDK levels: `compileSdk 36`, `targetSdk 36`, `minSdk 24`. `namespace = com.example`.
 
+> **Style-guide divergence:** the repo's `.gemini/styleguide.md` targets `minSdk 26` /
+> `targetSdk 35`. `app/build.gradle.kts` currently declares `minSdk 24` / `targetSdk 36`
+> (documented above as the actual build config) — reconcile in a code change when those
+> floors are intentionally raised.
+
 ## Project Structure (Android)
 
 ```
