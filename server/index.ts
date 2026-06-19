@@ -408,7 +408,7 @@ if (!process.env.VERCEL) {
       {
         port,
         host: "0.0.0.0",
-        reusePort: true,
+        reusePort: process.platform !== "win32",
       },
       () => {
         log(`express server serving on port ${port}`);
