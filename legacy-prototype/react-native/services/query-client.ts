@@ -1,5 +1,8 @@
 import { fetch } from "expo/fetch";
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { persistQueryClient } from "@tanstack/react-query-persist-client";
+import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 
 let _getAuthToken: (() => Promise<string | null>) | null = null;
 
@@ -112,10 +115,23 @@ export const queryClient = new QueryClient({
       // user-initiated mutations that manually invalidate the cache after changes.
       // No background refetching is needed since data only changes via explicit user actions.
       staleTime: Infinity,
+      gcTime: 1000 * 60 * 60 * 24 * 7, // Keep queries in garbage collection for 7 days offline
       retry: false,
     },
     mutations: {
       retry: false,
     },
   },
+});
+
+// Configure local offline storage persistence for all Query Cache entries
+const asyncStoragePersister = createAsyncStoragePersister({
+  storage: AsyncStorage,
+  key: "OFFLINE_STORY_CACHE",
+});
+
+persistQueryClient({
+  queryClient,
+  persister: asyncStoragePersister,
+  maxAge: 1000 * 60 * 60 * 24 * 7, // Persisted cache lifespan of 7 days
 });

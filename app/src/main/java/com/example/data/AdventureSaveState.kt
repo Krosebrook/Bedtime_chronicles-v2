@@ -20,7 +20,8 @@ data class AdventureSaveState(
     val choicesJson: String, // e.g. serialized JSON or a list
     val historyJson: String, // chronological list of dialog/transcript
     val sceneImageUrl: String = "",
-    val timestamp: Long = System.currentTimeMillis()
+    val timestamp: Long = System.currentTimeMillis(),
+    val inventoryJson: String = "" // Serialized comma-separated list of items in inventory
 )
 
 @Dao

@@ -59,95 +59,106 @@ object BedtimeAssets {
         "🦸", "🧙", "🦊", "🐱", "🦄", "🌟", "🚀", "🦋", "🐼", "🦁", "🐸", "🌈"
     )
 
-    // The 8 Hero Templates with unique cosmic powers, constellations, backgrounds, and themes
+    // The 9 Hero Templates with unique cosmic powers, constellations, backgrounds, and themes
     val HEROES = listOf(
         Hero(
             id = "hero-1",
-            name = "Nova",
-            title = "Guardian of Light",
-            power = "Starlight Shield",
-            description = "Nova protects sleeping children with her magical shield that glows like a thousand stars. She turns nightlights into tiny stars that keep the dark at bay.",
-            icon = Icons.Default.Shield,
-            colorHex = "#FFD54F",
-            gradientHexs = listOf("#1B237E", "#283593"),
-            constellation = "The Shield"
+            name = "Nova Engineer",
+            title = "The Blue Spark",
+            power = "Techno-Flight & Robot Owl Scout",
+            description = "Wearing deep blue armor coursing with purple energy lines, Nova Engineer explores the far reaches of the universe alongside his trusty robotic owl, fixing broken stars and building bridges across the cosmos.",
+            icon = Icons.Default.Hardware,
+            colorHex = "#3B82F6",
+            gradientHexs = listOf("#1E3A8A", "#312E81"),
+            constellation = "The Spark"
         ),
         Hero(
             id = "hero-2",
-            name = "Coral",
-            title = "Heart of the Ocean",
-            power = "Kindness Wave",
-            description = "Coral swims through moonlit oceans, spreading warmth and kindness wherever she goes. Her tail shimmers with sunset colors and her songs heal lonely hearts.",
-            icon = Icons.Default.Waves,
-            colorHex = "#4DD0E1",
-            gradientHexs = listOf("#006064", "#00838F"),
-            constellation = "The Wave"
+            name = "Star Knight",
+            title = "Defender of the Galaxy",
+            power = "Cosmic Shield",
+            description = "Donning an iconic pink and purple star-crested helmet, Star Knight summons a swirling galaxy shield to block nightmares and defend the dreams of children everywhere. He is brave, bright, and always ready.",
+            icon = Icons.Default.Security,
+            colorHex = "#D946EF",
+            gradientHexs = listOf("#701A75", "#831843"),
+            constellation = "The Shield"
         ),
         Hero(
             id = "hero-3",
-            name = "Orion",
-            title = "Star of Friendship",
-            power = "Constellation Bond",
-            description = "Once the loneliest star in the sky, Orion now connects friends across the universe. His constellation reminds everyone that true friends make you shine brighter.",
-            icon = Icons.Default.Star,
-            colorHex = "#B388FF",
-            gradientHexs = listOf("#311B92", "#4527A0"),
-            constellation = "The Bridge"
+            name = "Void Keeper",
+            title = "Explorer of the Deep",
+            power = "Lantern of the Black Hole",
+            description = "Dressed in a glowing orange-trimmed space suit, Void Keeper carries a lantern containing a miniature, harmless black hole. He wanders the dark corners of space, catching bad dreams and safely locking them away.",
+            icon = Icons.Default.Public,
+            colorHex = "#F97316",
+            gradientHexs = listOf("#7C2D12", "#431407"),
+            constellation = "The Lantern"
         ),
         Hero(
             id = "hero-4",
-            name = "Luna",
-            title = "The Dream Weaver",
-            power = "Dream Loom",
-            description = "Luna weaves beautiful dreams on her magical loom made of moonbeams and starlight. Each dream is unique and full of the things that make children happiest.",
-            icon = Icons.Default.Bedtime,
-            colorHex = "#CE93D8",
-            gradientHexs = listOf("#4A148C", "#6A1B9A"),
-            constellation = "The Loom"
+            name = "Gearheart",
+            title = "The Steampunk Mechanic",
+            power = "Clockwork Engineering",
+            description = "With her signature copper goggles and a bright red braid, Gearheart uses her mechanical genius to invent wondrous clockwork toys that come alive to tell stories and keep children company at night.",
+            icon = Icons.Default.Settings,
+            colorHex = "#FBBF24",
+            gradientHexs = listOf("#78350F", "#064E3B"),
+            constellation = "The Gear"
         ),
         Hero(
             id = "hero-5",
-            name = "Nimbus",
-            title = "The Brave Cloud",
-            power = "Storm Shield",
-            description = "The smallest cloud with the biggest heart. Nimbus proves that you don't need to be big to be brave. He protects gardens and children from scary storms.",
-            icon = Icons.Default.Cloud,
-            colorHex = "#90CAF9",
-            gradientHexs = listOf("#1565C0", "#1976D2"),
-            constellation = "The Cloud"
+            name = "Celestial",
+            title = "The Halo Sentinel",
+            power = "Orbiting Rings of Light",
+            description = "A mysterious heroine with glowing white hair and orbiting planetary rings. She floats silently through the cosmos, bringing a sense of ultimate peace and tranquility to those entering slumber.",
+            icon = Icons.Default.Brightness7,
+            colorHex = "#F8FAFC",
+            gradientHexs = listOf("#0F172A", "#1E293B"),
+            constellation = "The Ring"
         ),
         Hero(
             id = "hero-6",
-            name = "Bloom",
-            title = "Garden Keeper",
-            power = "Dream Seeds",
-            description = "Bloom tends the magical moonlit garden where dreams grow like flowers. Her silver wings scatter dream-seeds across the world, planting beautiful visions in sleeping minds.",
-            icon = Icons.Default.LocalFlorist,
-            colorHex = "#A5D6A7",
-            gradientHexs = listOf("#1B5E20", "#2E7D32"),
-            constellation = "The Garden"
+            name = "Prism",
+            title = "Master of Refraction",
+            power = "Crystal Light Beams",
+            description = "Sporting vivid purple hair and geometric crystal armor, Prism holds the ultimate jewel of light. She can split starlight into breathtaking rainbows that dance across bedroom walls.",
+            icon = Icons.Default.Diamond,
+            colorHex = "#C084FC",
+            gradientHexs = listOf("#4C1D95", "#3B0764"),
+            constellation = "The Prism"
         ),
         Hero(
             id = "hero-7",
-            name = "Whistle",
-            title = "Night Train Conductor",
-            power = "Dream Express",
-            description = "Every night at bedtime o'clock, Whistle drives the magical Night Train along the Milky Way, carrying dreaming children to wonderful destinations among the stars.",
-            icon = Icons.Default.DirectionsTransit,
-            colorHex = "#B0BEC5",
-            gradientHexs = listOf("#37474F", "#455A64"),
-            constellation = "The Track"
+            name = "Starweaver",
+            title = "The Constellation Crafter",
+            power = "Galaxy Weaving",
+            description = "Wrapping herself in a flowing cape made of real constellations, Starweaver shapes cosmic dust into glowing magical orbs. Her deep blue starry hair holds the map to all galaxies.",
+            icon = Icons.Default.AutoFixHigh,
+            colorHex = "#818CF8",
+            gradientHexs = listOf("#1E1B4B", "#312E81"),
+            constellation = "The Loom"
         ),
         Hero(
             id = "hero-8",
-            name = "Shade",
-            title = "Shadow Friend",
-            power = "Shadow Play",
-            description = "Made entirely of shadows, Shade is the gentlest hero of all. He makes funny shadow shapes to show children that the dark is nothing to fear, just a cozy blanket for sleeping.",
-            icon = Icons.Default.Contrast,
-            colorHex = "#78909C",
-            gradientHexs = listOf("#212121", "#37474F"),
-            constellation = "The Shadow"
+            name = "Botanist",
+            title = "The Cosmic Gardener",
+            power = "Neon Flora Growth",
+            description = "Wearing flower-petal goggles and neon green circuit armor, Botanist plants seeds that grow into towering, glowing trees on barren asteroids, bringing life to the darkest corners of space.",
+            icon = Icons.Default.LocalFlorist,
+            colorHex = "#4ADE80",
+            gradientHexs = listOf("#064E3B", "#065F46"),
+            constellation = "The Sprout"
+        ),
+        Hero(
+            id = "hero-9",
+            name = "Crystal Knight",
+            title = "The Ice Guardian",
+            power = "Swirling Frost Shield",
+            description = "With bright eyes and glowing crystal-plated armor, the Crystal Knight wields a swirling vortex shield of pure star-frost. He leads the charge in freezing bad dreams before they even begin.",
+            icon = Icons.Default.AcUnit,
+            colorHex = "#38BDF8",
+            gradientHexs = listOf("#082F49", "#0C4A6E"),
+            constellation = "The Crystal"
         )
     )
 
@@ -156,7 +167,7 @@ object BedtimeAssets {
         BedtimeBadge("first-adventure", "🌟", "First Adventure", "Completed your very first story!", "first_story"),
         BedtimeBadge("night-owl", "🦉", "Night Owl", "Listened to a bedtime story after 8:00 PM.", "night_story"),
         BedtimeBadge("early-bird", "🐦", "Early Bird", "Started an early story in the morning.", "morning_story"),
-        BedtimeBadge("all-heroes", "🏆", "Hero Collector", "Played role-playing stories with 8 unique heroes!", "all_heroes"),
+        BedtimeBadge("all-heroes", "🏆", "Hero Collector", "Played role-playing stories with 9 unique heroes!", "all_heroes"),
         BedtimeBadge("mad-libs-master", "🤪", "Silly Storyteller", "Completed 3 creative Mad Libs stories.", "madlibs_3"),
         BedtimeBadge("dream-weaver", "🌙", "Dream Weaver", "Completed 3 relaxing Sleep mode stories.", "sleep_3"),
         BedtimeBadge("classic-champion", "⚔️", "Classic Champion", "Completed 5 incredible Classic stories.", "classic_5"),

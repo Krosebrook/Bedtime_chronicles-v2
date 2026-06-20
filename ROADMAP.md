@@ -1,9 +1,9 @@
 # Master Development & Technical Roadmap: Infinity Heroes Native Port
 
-**Last Updated:** 2026-06-15  
-**Project:** Infinity Heroes: Bedtime Chronicles (Android Jetpack Compose Native App)  
-**Target Platform:** Native Android (Min SDK: 26, Target SDK: 35)  
-**Underlying Architecture:** Kotlin MVVM + Jetpack Compose M3 + Room SQLite Database + Retrofit REST Client  
+**Last Updated:** 2026-06-17  
+**Project:** Infinity Heroes: Bedtime Chronicles (Android Jetpack Compose Native App & React Native Sync App)  
+**Target Platform:** Native Android (Min SDK: 26, Target SDK: 35) & React Native  
+**Underlying Architecture:** Kotlin MVVM + Jetpack Compose M3 + Room SQLite Database + Retrofit REST Client
 
 ---
 
@@ -11,6 +11,8 @@
 This document serves as the absolute source of truth for the native Android transition of **Infinity Heroes: Bedtime Chronicles**. It merges the legacy launch readiness phases (`2026-06-11-launch-readiness-phases.md`), the native features backlog (`ROADMAP.md`), the launch-readiness outline (`2026-04-08-launch-readiness.md`), and the maturity pipeline (`2026-04-08-maturity.md`). 
 
 All major presentation modules (Home, Story Reader, Library, and Character Creation) are successfully running natively on Android with responsive styling and advanced fade-in page transitions. Core child safety protocols (COPPA compliance) and high-value interactive features are queued next.
+
+\* *Update: Cross-platform hero expansion and offline RN synchronization queue has been implemented ensuring graceful degradation.*
 
 ---
 

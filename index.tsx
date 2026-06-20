@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import {
   View,
   Text,
@@ -9,19 +9,23 @@ import {
   TextInput,
   Image,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useFocusEffect } from "expo-router";
-import Animated, { FadeInDown, FadeIn } from "react-native-reanimated";
+import Animated, { FadeInDown, FadeIn, FadeOut } from "react-native-reanimated";
+import * as Haptics from "expo-haptics";
 import Colors from "@/constants/colors";
 import { StarField } from "@/components/StarField";
 import { useProfile } from "@/lib/ProfileContext";
-import { getAllStories, getFavorites } from "@/lib/storage";
+import { getAllStories, getFavorites, getActiveReadingSession, clearActiveReadingSession } from "@/lib/storage";
 import { CachedStory } from "@/constants/types";
 import { HEROES } from "@/constants/heroes";
+import { useQuery } from "@tanstack/react-query";
+import { useSyncOffline } from "./useSyncOffline";
 
 const CATEGORIES = [
   {
@@ -109,15 +113,24 @@ export default function HomeScreen() {
   const bottomInset = Platform.OS === "web" ? 34 : insets.bottom;
   const [searchText, setSearchText] = useState("");
   const { activeProfile } = useProfile();
-  const [recentStories, setRecentStories] = useState<CachedStory[]>([]);
+  const { isSyncing } = useSyncOffline();
+  const [activeSession, setActiveSession] = useState<any>(null);
+
+  const { data: allStories = [], refetch: refetchStories } = useQuery<CachedStory[]>({
+    queryKey: ["stories", "all"],
+    queryFn: getAllStories,
+    staleTime: Infinity,
+  });
+
+  const recentStories = useMemo(() => allStories.slice(0, 4), [allStories]);
+
   useFocusEffect(
     useCallback(() => {
-      const load = async () => {
-        const stories = await getAllStories();
-        setRecentStories(stories.slice(0, 4));
-      };
-      load();
-    }, [])
+      refetchStories();
+      getActiveReadingSession().then((session) => {
+        setActiveSession(session);
+      }).catch(() => {});
+    }, [refetchStories])
   );
 
   const handleStoryPress = (storyId: string) => {
@@ -153,6 +166,17 @@ export default function HomeScreen() {
               </Text>
             </View>
             <View style={styles.headerRight}>
+              {isSyncing && (
+                <Animated.View 
+                  entering={FadeIn.duration(300)} 
+                  exiting={FadeOut.duration(300)} 
+                  style={styles.syncIndicatorPill}
+                  testID="home_sync_indicator"
+                >
+                  <ActivityIndicator size="small" color="#a855f7" style={{ marginRight: 4 }} />
+                  <Text style={styles.syncIndicatorText}>Syncing</Text>
+                </Animated.View>
+              )}
               <Pressable
                 onPress={() => router.push("/settings")}
                 hitSlop={10}
@@ -195,6 +219,68 @@ export default function HomeScreen() {
             </View>
           </View>
         </Animated.View>
+
+        {activeSession && (
+          <Animated.View entering={FadeInDown.duration(400).delay(150)} exiting={FadeOut.duration(300)} style={styles.activeSessionCard}>
+            <LinearGradient colors={["rgba(99,102,241,0.2)", "rgba(168,85,247,0.14)"]} style={styles.activeSessionGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} />
+            <View style={styles.activeSessionRow}>
+              <View style={styles.activeSessionLeft}>
+                <View style={styles.activeSessionIconBox}>
+                  <Ionicons name="sparkles" size={20} color="#a855f7" />
+                </View>
+                <View style={styles.activeSessionTextContainer}>
+                  <Text style={styles.activeSessionSubtitle}>Continue Reading</Text>
+                  <Text style={styles.activeSessionTitle} numberOfLines={1}>{activeSession.storyData.title}</Text>
+                  <Text style={styles.activeSessionMeta}>
+                    Page {activeSession.currentPartIndex + 1} of {activeSession.storyData.parts.length}
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.activeSessionActions}>
+                <Pressable
+                  style={styles.resumeBtn}
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                    router.push({
+                      pathname: "/story",
+                      params: {
+                        storyId: activeSession.storyId || undefined,
+                        heroId: activeSession.heroId,
+                        mode: activeSession.mode,
+                        duration: activeSession.duration || "medium",
+                        voice: activeSession.voice || "moonbeam",
+                        speed: activeSession.speed || "medium",
+                        sleepTimer: activeSession.sleepTimer || undefined,
+                        soundscape: activeSession.soundscape || undefined,
+                        setting: activeSession.setting || undefined,
+                        tone: activeSession.tone || undefined,
+                        childName: activeSession.childName || undefined,
+                        sidekick: activeSession.sidekick || undefined,
+                        problem: activeSession.problem || undefined,
+                        replayJson: JSON.stringify(activeSession.storyData),
+                      },
+                    });
+                  }}
+                  accessibilityLabel="Resume reading this story"
+                  accessibilityRole="button"
+                >
+                  <Text style={styles.resumeBtnText}>Resume</Text>
+                </Pressable>
+                <Pressable
+                  style={styles.dismissSessionBtn}
+                  onPress={async () => {
+                    await clearActiveReadingSession();
+                    setActiveSession(null);
+                  }}
+                  accessibilityLabel="Dismiss reading session"
+                  accessibilityRole="button"
+                >
+                  <Ionicons name="close-circle" size={24} color="rgba(255,255,255,0.3)" />
+                </Pressable>
+              </View>
+            </View>
+          </Animated.View>
+        )}
 
         <Animated.View entering={FadeInDown.duration(400).delay(200)}>
           <ScrollView
@@ -574,5 +660,99 @@ const styles = StyleSheet.create({
     height: 3,
     borderRadius: 1.5,
     backgroundColor: "rgba(255,255,255,0.25)",
+  },
+  syncIndicatorPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(168, 85, 247, 0.12)",
+    borderWidth: 1,
+    borderColor: "rgba(168, 85, 247, 0.25)",
+    borderRadius: 20,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    marginRight: 8,
+  },
+  syncIndicatorText: {
+    fontFamily: "PlusJakartaSans_600SemiBold",
+    fontSize: 11,
+    color: "#c084fc",
+  },
+  activeSessionCard: {
+    marginHorizontal: 20,
+    marginTop: 4,
+    marginBottom: 16,
+    borderRadius: 16,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "rgba(168, 85, 247, 0.25)",
+  },
+  activeSessionGradient: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  activeSessionRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 14,
+  },
+  activeSessionLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
+  activeSessionIconBox: {
+    width: 38,
+    height: 38,
+    borderRadius: 10,
+    backgroundColor: "rgba(168, 85, 247, 0.15)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 12,
+  },
+  activeSessionTextContainer: {
+    flex: 1,
+  },
+  activeSessionSubtitle: {
+    fontFamily: "PlusJakartaSans_700Bold",
+    fontSize: 11,
+    color: "#a855f7",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  activeSessionTitle: {
+    fontFamily: "PlusJakartaSans_700Bold",
+    fontSize: 14,
+    color: "#FFFFFF",
+    marginTop: 2,
+  },
+  activeSessionMeta: {
+    fontFamily: "PlusJakartaSans_500Medium",
+    fontSize: 11,
+    color: "rgba(255,255,255,0.4)",
+    marginTop: 1,
+  },
+  activeSessionActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  resumeBtn: {
+    backgroundColor: "#6366f1",
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    shadowColor: "#6366f1",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  resumeBtnText: {
+    fontFamily: "PlusJakartaSans_700Bold",
+    fontSize: 12,
+    color: "#FFFFFF",
+  },
+  dismissSessionBtn: {
+    padding: 4,
   },
 });

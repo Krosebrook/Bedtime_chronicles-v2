@@ -6,7 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.data.DatabaseProvider
 import com.example.data.GeneratedStoryContent
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class ReaderViewModel(application: Application) : AndroidViewModel(application) {
@@ -15,6 +17,9 @@ class ReaderViewModel(application: Application) : AndroidViewModel(application) 
     
     private val _story = MutableStateFlow<GeneratedStoryContent?>(null)
     val story: StateFlow<GeneratedStoryContent?> = _story
+
+    val allStories: StateFlow<List<GeneratedStoryContent>> = storyDao.getAllStories()
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     fun loadStory(id: String) {
         viewModelScope.launch {

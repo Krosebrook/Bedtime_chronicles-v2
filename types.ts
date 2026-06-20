@@ -12,6 +12,7 @@ export interface StoryFull {
   lesson: string;
   tomorrowHook: string;
   rewardBadge: { emoji: string; title: string; description: string };
+  musicUrl?: string;
 }
 
 export interface CachedStory {

@@ -39,19 +39,22 @@ import com.example.ui.theme.GlassWhite
 import com.example.ui.theme.Slate300
 import com.example.viewmodel.GenerationState
 import com.example.viewmodel.StoryGenerationViewModel
+import com.airbnb.lottie.compose.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateStoryScreen(
     onBack: () -> Unit,
-    onStoryGenerated: (String) -> Unit // Ideally navigate to reader
+    onStoryGenerated: (String) -> Unit, // Ideally navigate to reader
+    initialHeroName: String? = null
 ) {
     val viewModel: StoryGenerationViewModel = viewModel()
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val isCachedResult by viewModel.isCachedResult.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val prefs = remember { com.example.data.AppPreferences.getInstance(context) }
     
-    var heroName by remember { mutableStateOf("") }
+    var heroName by remember { mutableStateOf(initialHeroName ?: "") }
     var selectedGenre by remember { mutableStateOf("Adventure") }
     var setting by remember { mutableStateOf("A glowing forest on a distant planet") }
     var keywords by remember { mutableStateOf("") }
@@ -104,22 +107,35 @@ fun CreateStoryScreen(
             
             if (state is GenerationState.Success) {
                 val story = (state as GenerationState.Success).story
-                Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer), modifier = Modifier.fillMaxWidth()) {
+                Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer), modifier = Modifier.fillMaxWidth().testTag("story_generated_card")) {
                     Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("Story Created!", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = MaterialTheme.colorScheme.onPrimaryContainer)
+                        if (isCachedResult) {
+                            Text("Offline Bedtime Adventure Loaded!", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = MaterialTheme.colorScheme.onPrimaryContainer, textAlign = TextAlign.Center, modifier = Modifier.testTag("offline_story_title_label"))
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Surface(color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.1f), shape = RoundedCornerShape(8.dp), modifier = Modifier.padding(bottom = 8.dp).testTag("offline_badge")) {
+                                Text("📶 Offline / Cozy Mode Active", style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimaryContainer, modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp))
+                            }
+                        } else {
+                            Text("Story Created!", fontWeight = FontWeight.Bold, fontSize = 20.sp, color = MaterialTheme.colorScheme.onPrimaryContainer, modifier = Modifier.testTag("story_created_label"))
+                        }
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text(story.title, textAlign = TextAlign.Center, fontWeight = FontWeight.Medium)
+                        Text(story.title, textAlign = TextAlign.Center, fontWeight = FontWeight.Medium, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onPrimaryContainer)
                         Spacer(modifier = Modifier.height(16.dp))
-                        Text("Your cover image and story have been generated and saved to your library.", textAlign = TextAlign.Center, fontSize = 12.sp)
+                        
+                        if (isCachedResult) {
+                            Text("Your device is offline or network is limited. We've instantly retrieved an adventure matching your theme from your library to keep bedtimes restful!", textAlign = TextAlign.Center, fontSize = 13.sp, color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f))
+                        } else {
+                            Text("Your cover image and story have been generated and saved to your library.", textAlign = TextAlign.Center, fontSize = 12.sp, color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f))
+                        }
                         Spacer(modifier = Modifier.height(16.dp))
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            OutlinedButton(onClick = { viewModel.reset() }) {
+                            OutlinedButton(onClick = { viewModel.reset() }, modifier = Modifier.testTag("create_another_button")) {
                                 Text("Create Another")
                             }
                             Button(onClick = { 
                                 onStoryGenerated(story.id)
                                 viewModel.reset() 
-                            }) {
+                            }, modifier = Modifier.testTag("read_story_button")) {
                                 Text("Read Story")
                             }
                         }
@@ -129,6 +145,116 @@ fun CreateStoryScreen(
             }
 
             if (state !is GenerationState.Success && state !is GenerationState.Generating) {
+                val db = remember { com.example.data.DatabaseProvider.getDatabase(context) }
+                val customHeroesList by db.customHeroDao().getAllCustomHeroes().collectAsStateWithLifecycle(initialValue = emptyList())
+
+                if (customHeroesList.isNotEmpty()) {
+                    Column(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                        Text(
+                            text = "Your Created Bedtime Heroes",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(vertical = 8.dp, horizontal = 4.dp).testTag("select_custom_hero_label")
+                        )
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            contentPadding = PaddingValues(horizontal = 4.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 16.dp)
+                        ) {
+                            items(customHeroesList) { customHero ->
+                                val isSelected = heroName == customHero.name
+                                val parsedColor = Color(android.graphics.Color.parseColor(customHero.outfitColorHex))
+                                Card(
+                                    onClick = {
+                                        selectedHeroId = null
+                                        heroName = customHero.name
+                                        setting = "A stellar, dreamy atmosphere where ${customHero.name} embarks on an adventure."
+                                        keywords = "${customHero.auraGlowStyle}, ${customHero.companionType}, starry skies, tranquil clouds"
+                                        selectedGenre = "Cosmic"
+                                    },
+                                    modifier = Modifier
+                                        .width(162.dp)
+                                        .height(150.dp)
+                                        .testTag("custom_hero_choice_${customHero.id}"),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = if (isSelected) {
+                                            parsedColor.copy(alpha = 0.22f)
+                                        } else {
+                                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.15f)
+                                        }
+                                    ),
+                                    border = androidx.compose.foundation.BorderStroke(
+                                        width = if (isSelected) 2.dp else 1.dp,
+                                        color = if (isSelected) parsedColor else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                                    ),
+                                    shape = RoundedCornerShape(16.dp)
+                                ) {
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .padding(12.dp),
+                                        verticalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(34.dp)
+                                                    .clip(RoundedCornerShape(8.dp))
+                                                    .background(parsedColor.copy(alpha = 0.2f)),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Text(customHero.avatarEmoji, fontSize = 20.sp)
+                                            }
+                                            if (isSelected) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Check,
+                                                    contentDescription = "Selected",
+                                                    tint = parsedColor,
+                                                    modifier = Modifier.size(16.dp)
+                                                )
+                                            }
+                                        }
+                                        
+                                        Column {
+                                            Text(
+                                                text = customHero.name,
+                                                style = MaterialTheme.typography.bodyLarge,
+                                                fontWeight = FontWeight.Bold,
+                                                color = Color.White,
+                                                maxLines = 1,
+                                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                                            )
+                                            Text(
+                                                text = customHero.backstoryArchetype,
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = Slate300,
+                                                maxLines = 1,
+                                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                                            )
+                                        }
+                                        
+                                        Text(
+                                            text = "Glow: ${customHero.auraGlowStyle}",
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = parsedColor,
+                                            fontWeight = FontWeight.SemiBold,
+                                            maxLines = 1,
+                                            overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
                 // Interactive Hero Templates Selector Carousel
                 Column(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
                     Text(
@@ -465,7 +591,7 @@ fun CreateStoryScreen(
                     Text("Weaving your magical tale. Please wait...", color = Slate300)
                     Spacer(modifier = Modifier.height(32.dp))
                     
-                    // Cover Image Skeleton with Cosmic Spinner
+                    // Cover Image Skeleton with Cosmic Spinner & Lottie animation
                     Box(modifier = Modifier
                         .fillMaxWidth()
                         .height(240.dp)
@@ -474,9 +600,13 @@ fun CreateStoryScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            CosmicLoadingSpinner()
+                            CosmicLottieAnimation(
+                                modifier = Modifier
+                                    .size(120.dp)
+                                    .testTag("generating_story_lottie")
+                            )
                             Spacer(modifier = Modifier.height(16.dp))
-                            Text("Stylizing nebula cover...", fontSize = 12.sp, color = Slate300)
+                            Text("Weaving star dust and stories...", fontSize = 12.sp, color = Slate300)
                         }
                     }
                     
@@ -648,4 +778,20 @@ fun CosmicLoadingSpinner(modifier: Modifier = Modifier) {
             center = Offset(width * 0.35f, height * 0.85f)
         )
     }
+}
+
+@Composable
+fun CosmicLottieAnimation(modifier: Modifier = Modifier) {
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(com.example.R.raw.cosmic_loader)
+    )
+    val progress by animateLottieCompositionAsState(
+        composition = composition,
+        iterations = LottieConstants.IterateForever
+    )
+    LottieAnimation(
+        composition = composition,
+        progress = { progress },
+        modifier = modifier
+    )
 }

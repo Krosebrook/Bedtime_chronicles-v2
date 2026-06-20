@@ -41,11 +41,12 @@ const PURPLE_BORDER = "rgba(168, 85, 247, 0.2)";
 const PURPLE_ACTIVE_BORDER = "rgba(168, 85, 247, 0.4)";
 
 export default function SleepSetupScreen() {
-  const { heroId, duration, voice, speed } = useLocalSearchParams<{
+  const { heroId, duration, voice, speed, musicType } = useLocalSearchParams<{
     heroId: string;
     duration: string;
     voice: string;
     speed: string;
+    musicType: string;
   }>();
   const insets = useSafeAreaInsets();
   const topInset = Platform.OS === "web" ? 67 : insets.top;
@@ -73,6 +74,7 @@ export default function SleepSetupScreen() {
         soundscape,
         sleepTimer,
         speed: speed || "gentle",
+        musicType: musicType || "classic",
       },
     });
   };

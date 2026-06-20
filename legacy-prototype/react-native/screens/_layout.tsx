@@ -1,10 +1,11 @@
 import React from "react";
-import { View, Text, StyleSheet, Platform } from "react-native";
+import { View, Text, StyleSheet, Platform, Pressable } from "react-native";
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import type { ComponentProps } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Colors from "@/constants/colors";
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from "react-native-reanimated";
 
 type IoniconsName = ComponentProps<typeof Ionicons>["name"];
 
@@ -16,12 +17,27 @@ interface TabIconProps {
 }
 
 function TabIcon({ name, focused, label, isCreate }: TabIconProps) {
+  const scale = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
   if (isCreate) {
     return (
       <View style={styles.createBtnWrap} accessibilityLabel="Create a new story" accessibilityRole="button">
-        <View style={styles.createBtn}>
-          <Ionicons name="add" size={28} color="#FFF" />
-        </View>
+        <Pressable
+          onPressIn={() => {
+            scale.value = withSpring(0.88, { damping: 10, stiffness: 100 });
+          }}
+          onPressOut={() => {
+            scale.value = withSpring(1, { damping: 10, stiffness: 100 });
+          }}
+        >
+          <Animated.View style={[styles.createBtn, animatedStyle]}>
+            <Ionicons name="add" size={28} color="#FFF" />
+          </Animated.View>
+        </Pressable>
         <Text style={[styles.tabLabel, { color: focused ? Colors.accent : "rgba(255,255,255,0.4)" }]}>
           {label}
         </Text>

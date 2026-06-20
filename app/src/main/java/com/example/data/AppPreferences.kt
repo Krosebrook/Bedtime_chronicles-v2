@@ -24,6 +24,9 @@ class AppPreferences(context: Context) {
     private val _ttsNarrator = MutableStateFlow(prefs.getString("KEY_TTS_NARRATOR", "default") ?: "default")
     val ttsNarrator: StateFlow<String> = _ttsNarrator.asStateFlow()
 
+    private val _autoplayNext = MutableStateFlow(prefs.getBoolean("KEY_AUTOPLAY_NEXT", false))
+    val autoplayNext: StateFlow<Boolean> = _autoplayNext.asStateFlow()
+
     fun setDarkMode(enabled: Boolean) {
         prefs.edit().putBoolean("KEY_DARK_MODE", enabled).apply()
         _isDarkMode.value = enabled
@@ -32,6 +35,11 @@ class AppPreferences(context: Context) {
     fun setMidnightMode(enabled: Boolean) {
         prefs.edit().putBoolean("KEY_MIDNIGHT_MODE", enabled).apply()
         _isMidnightMode.value = enabled
+    }
+
+    fun setAutoplayNext(enabled: Boolean) {
+        prefs.edit().putBoolean("KEY_AUTOPLAY_NEXT", enabled).apply()
+        _autoplayNext.value = enabled
     }
 
     fun setTtsPitch(pitch: Float) {

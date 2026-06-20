@@ -9,18 +9,24 @@ import {
   Alert,
   Dimensions,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useFocusEffect, router } from "expo-router";
-import Animated, { FadeInDown } from "react-native-reanimated";
+import Animated, { FadeInDown, FadeIn, FadeOut } from "react-native-reanimated";
 import Colors from "@/constants/colors";
 import { StarField } from "@/components/StarField";
 import { useProfile } from "@/lib/ProfileContext";
 import { HEROES } from "@/constants/heroes";
 import { CachedStory } from "@/constants/types";
 import { getStoriesForProfile, getAllStories, deleteStory, getFavorites, toggleFavorite, getReadStories, markStoryRead } from "@/lib/storage";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import NetInfo from "@react-native-community/netinfo";
+import { queueInteraction } from "./sync-queue";
+import { apiRequest } from "./query-client";
+import { useSyncOffline } from "./useSyncOffline";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const CARD_WIDTH = (SCREEN_WIDTH - 48) / 2;
@@ -46,36 +52,61 @@ export default function LibraryScreen() {
   const insets = useSafeAreaInsets();
   const topInset = Platform.OS === "web" ? 67 : insets.top;
   const { activeProfile } = useProfile();
-  const [stories, setStories] = useState<CachedStory[]>([]);
-  const [favorites, setFavorites] = useState<string[]>([]);
-  const [readStories, setReadStories] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const { isSyncing } = useSyncOffline();
+
+  const { data: stories = [], isLoading: isStoriesLoading, refetch: refetchStories } = useQuery<CachedStory[]>({
+    queryKey: ["stories", activeProfile?.id || "all"],
+    queryFn: async () => {
+      return activeProfile ? getStoriesForProfile(activeProfile.id) : getAllStories();
+    },
+    staleTime: Infinity,
+  });
+
+  const { data: favorites = [], isLoading: isFavoritesLoading, refetch: refetchFavorites } = useQuery<string[]>({
+    queryKey: ["favorites"],
+    queryFn: getFavorites,
+    staleTime: Infinity,
+  });
+
+  const { data: readStories = [], isLoading: isReadStoriesLoading, refetch: refetchReadStories } = useQuery<string[]>({
+    queryKey: ["readStories"],
+    queryFn: getReadStories,
+    staleTime: Infinity,
+  });
 
   useFocusEffect(
     useCallback(() => {
-      let cancelled = false;
-      async function load() {
-        setIsLoading(true);
-        const [s, f, r] = await Promise.all([
-          activeProfile ? getStoriesForProfile(activeProfile.id) : getAllStories(),
-          getFavorites(),
-          getReadStories(),
-        ]);
-        if (!cancelled) {
-          setStories(s);
-          setFavorites(f);
-          setReadStories(r);
-          setIsLoading(false);
-        }
-      }
-      load();
-      return () => { cancelled = true; };
-    }, [activeProfile])
+      refetchStories();
+      refetchFavorites();
+      refetchReadStories();
+    }, [refetchStories, refetchFavorites, refetchReadStories])
   );
 
   const handleFavorite = async (id: string) => {
+    const isCurrentlyFav = favorites.includes(id);
     const updated = await toggleFavorite(id);
-    setFavorites(updated);
+    queryClient.setQueryData(["favorites"], updated);
+
+    // Queue synchronization logic
+    try {
+      const netStatus = await NetInfo.fetch();
+      const isOnline = netStatus.isConnected && netStatus.isInternetReachable !== false;
+      if (isOnline) {
+        await apiRequest("POST", "api/sync/interactions", {
+          interactions: [{
+            id: `act_${Math.random().toString(36).substring(2, 11)}`,
+            type: isCurrentlyFav ? "unlike" : "like",
+            storyId: id,
+            timestamp: Date.now()
+          }]
+        });
+      } else {
+        await queueInteraction(isCurrentlyFav ? "unlike" : "like", id);
+      }
+    } catch {
+      await queueInteraction(isCurrentlyFav ? "unlike" : "like", id);
+    }
   };
 
   const handleDelete = (id: string, title: string) => {
@@ -86,11 +117,13 @@ export default function LibraryScreen() {
         style: "destructive",
         onPress: async () => {
           await deleteStory(id);
-          setStories((prev) => prev.filter((s) => s.id !== id));
+          queryClient.invalidateQueries({ queryKey: ["stories"] });
         },
       },
     ]);
   };
+
+  const isLoading = isStoriesLoading || isFavoritesLoading || isReadStoriesLoading;
 
   const getHero = (heroId: string) => HEROES.find((h) => h.id === heroId);
 
@@ -107,20 +140,17 @@ export default function LibraryScreen() {
           style={styles.storyCard}
           onPress={() => {
             if (isUnread) {
-              void markStoryRead(item.id).catch((error) => {
+              void markStoryRead(item.id).then(() => {
+                queryClient.invalidateQueries({ queryKey: ["readStories"] });
+              }).catch((error) => {
                 // Non-fatal: log storage failure instead of causing an unhandled rejection
                 console.error("Failed to mark story as read:", error);
-              });
-              setReadStories((prev) => {
-                if (prev.includes(item.id)) {
-                  return prev;
-                }
-                return [...prev, item.id];
               });
             }
             router.push({
               pathname: "/story",
               params: {
+                storyId: item.id,
                 heroId: item.heroId,
                 mode: item.mode,
                 duration: "medium",
@@ -187,7 +217,19 @@ export default function LibraryScreen() {
       <StarField />
 
       <View style={[styles.header, { paddingTop: topInset + 12 }]}>
-        <Text style={styles.headerTitle}>Your Library</Text>
+        <View style={styles.headerRow}>
+          <Text style={styles.headerTitle}>Your Library</Text>
+          {isSyncing && (
+            <Animated.View 
+              entering={FadeIn.duration(300)} 
+              exiting={FadeOut.duration(300)} 
+              style={styles.headerSyncBadge}
+            >
+              <ActivityIndicator size="small" color="#818cf8" style={{ marginRight: 4 }} />
+              <Text style={styles.headerSyncText}>Syncing Chronicles...</Text>
+            </Animated.View>
+          )}
+        </View>
         <Text style={styles.headerCount}>
           {stories.length} {stories.length === 1 ? "story" : "stories"}
         </Text>
@@ -351,5 +393,28 @@ const styles = StyleSheet.create({
     fontSize: 8,
     color: Colors.textPrimary,
     letterSpacing: 1,
+  },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  headerSyncBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(99, 102, 241, 0.15)",
+    borderWidth: 1,
+    borderColor: "rgba(99, 102, 241, 0.3)",
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  headerSyncText: {
+    fontFamily: "PlusJakartaSans_700Bold",
+    fontSize: 10,
+    color: "#818cf8",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
   },
 });

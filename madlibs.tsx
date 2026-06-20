@@ -28,11 +28,12 @@ const MADLIB_FIELDS = [
 ];
 
 export default function MadLibsScreen() {
-  const { heroId, duration, voice, speed } = useLocalSearchParams<{
+  const { heroId, duration, voice, speed, musicType } = useLocalSearchParams<{
     heroId: string;
     duration: string;
     voice: string;
     speed: string;
+    musicType: string;
   }>();
   const insets = useSafeAreaInsets();
   const topInset = Platform.OS === "web" ? 67 : insets.top;
@@ -71,6 +72,7 @@ export default function MadLibsScreen() {
         mode: "madlibs",
         madlibWords: JSON.stringify(cleanWords),
         speed: speed || "medium",
+        musicType: musicType || "classic",
       },
     });
   };

@@ -46,15 +46,15 @@ data class Candidate(
 )
 
 interface GeminiApiService {
-    @POST("v1beta/models/gemini-3.5-flash:generateContent")
+    @POST("api/v1/story/generate")
     suspend fun generateContent(
-        @Query("key") apiKey: String,
+        @retrofit2.http.Header("Authorization") authHeader: String,
         @Body request: GenerateContentRequest
     ): GenerateContentResponse
 
-    @POST("v1beta/models/imagen-3.0-generate-002:generateImages")
+    @POST("api/v1/images/generate")
     suspend fun generateImages(
-        @Query("key") apiKey: String,
+        @retrofit2.http.Header("Authorization") authHeader: String,
         @Body request: GenerateImagesRequest
     ): GenerateImagesResponse
 }
@@ -83,7 +83,7 @@ data class ImageContent(
 )
 
 object RetrofitClient {
-    private const val BASE_URL = "https://generativelanguage.googleapis.com/"
+    private const val BASE_URL = "http://10.0.2.2:3000/"
 
     private val okHttpClient = OkHttpClient.Builder()
         .connectTimeout(60, TimeUnit.SECONDS)

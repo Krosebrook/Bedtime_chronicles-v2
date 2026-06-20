@@ -9,12 +9,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@Database(entities = [UserProfile::class, GeneratedStoryContent::class, AdventureSaveState::class, PlacedSticker::class], version = 4, exportSchema = false)
+@Database(entities = [UserProfile::class, GeneratedStoryContent::class, AdventureSaveState::class, PlacedSticker::class, CustomHero::class], version = 6, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userProfileDao(): UserProfileDao
     abstract fun generatedStoryDao(): GeneratedStoryDao
     abstract fun adventureSaveStateDao(): AdventureSaveStateDao
     abstract fun placedStickerDao(): PlacedStickerDao
+    abstract fun customHeroDao(): CustomHeroDao
 }
 
 object DatabaseProvider {

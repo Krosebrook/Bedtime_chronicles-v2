@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { Audio } from "expo-av";
 import { getApiUrl } from "@/lib/query-client";
 import type { StoryMode } from "@/constants/story-theme";
@@ -16,7 +16,7 @@ export interface BackgroundMusicState {
  * Looping background music for the story screen. The caller starts/stops
  * playback explicitly (typically in its mount/unmount effect).
  */
-export function useBackgroundMusic(storyMode: StoryMode): BackgroundMusicState {
+export function useBackgroundMusic(storyMode: StoryMode, customMusicUrl?: string): BackgroundMusicState {
   const [musicMuted, setMusicMuted] = useState(false);
   const [musicLoading, setMusicLoading] = useState(false);
   const [musicPlaying, setMusicPlaying] = useState(false);
@@ -43,11 +43,19 @@ export function useBackgroundMusic(storyMode: StoryMode): BackgroundMusicState {
     setMusicLoading(true);
     try {
       const baseUrl = getApiUrl();
-      // Use a random track index so each story session can get a different track when
-      // multiple variants exist (e.g. classic.mp3, classic_2.mp3, …).
-      // The ?t= param also busts HTTP caches so the server may select a new random file.
-      const trackIndex = musicTrackIndexRef.current;
-      const musicUrl = new URL(`/api/music/${storyMode}?t=${trackIndex}`, baseUrl).toString();
+      // Use custom music file generated via Lyria if present, or generic modes
+      let musicUrl: string;
+      if (customMusicUrl) {
+        musicUrl = customMusicUrl.startsWith("http")
+          ? customMusicUrl
+          : new URL(customMusicUrl, baseUrl).toString();
+      } else {
+        // Use a random track index so each story session can get a different track when
+        // multiple variants exist (e.g. classic.mp3, classic_2.mp3, …).
+        // The ?t= param also busts HTTP caches so the server may select a new random file.
+        const trackIndex = musicTrackIndexRef.current;
+        musicUrl = new URL(`/api/music/${storyMode}?t=${trackIndex}`, baseUrl).toString();
+      }
 
       await Audio.setAudioModeAsync({
         playsInSilentModeIOS: true,
@@ -56,11 +64,18 @@ export function useBackgroundMusic(storyMode: StoryMode): BackgroundMusicState {
 
       const { sound } = await Audio.Sound.createAsync(
         { uri: musicUrl },
-        { shouldPlay: true, volume: MUSIC_VOLUME, isLooping: false }
+        { shouldPlay: true, volume: MUSIC_VOLUME, isLooping: !customMusicUrl } // Loop native loops, but let AI generate play full length
       );
 
       sound.setOnPlaybackStatusUpdate(async (status) => {
         if (status.isLoaded && status.didJustFinish) {
+          if (customMusicUrl) {
+            // Keep AI custom music looping or finish? Let's loop it too!
+            try {
+              await sound.replayAsync();
+            } catch {}
+            return;
+          }
           // Advance track index so the next load requests a different cache-busted URL,
           // enabling variety when multiple track variants exist for this mode.
           musicTrackIndexRef.current = (musicTrackIndexRef.current + 1) % MUSIC_TRACK_INDEX_RANGE;
@@ -88,7 +103,16 @@ export function useBackgroundMusic(storyMode: StoryMode): BackgroundMusicState {
       if (__DEV__) console.log("Background music failed:", err);
       setMusicLoading(false);
     }
-  }, [storyMode, MUSIC_VOLUME]);
+  }, [storyMode, MUSIC_VOLUME, customMusicUrl]);
+
+  // Switch immediately to custom music once it becomes available
+  useEffect(() => {
+    if (customMusicUrl) {
+      stopBgMusic().then(() => {
+        startBgMusic();
+      });
+    }
+  }, [customMusicUrl, startBgMusic, stopBgMusic]);
 
   const toggleBgMusic = useCallback(async () => {
     if (!bgMusicRef.current) return;

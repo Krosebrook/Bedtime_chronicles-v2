@@ -8,6 +8,7 @@ import com.example.data.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.UUID
@@ -24,14 +25,67 @@ class StoryGenerationViewModel(application: Application) : AndroidViewModel(appl
     private val _state = MutableStateFlow<GenerationState>(GenerationState.Idle)
     val state: StateFlow<GenerationState> = _state
     
+    private val _isCachedResult = MutableStateFlow(false)
+    val isCachedResult: StateFlow<Boolean> = _isCachedResult
+    
     private val database = DatabaseProvider.getDatabase(application)
     private val storyDao = database.generatedStoryDao()
+
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = getApplication<Application>().getSystemService(android.content.Context.CONNECTIVITY_SERVICE) as? android.net.ConnectivityManager
+        if (connectivityManager != null) {
+            val activeNetwork = connectivityManager.activeNetworkInfo
+            return activeNetwork != null && activeNetwork.isConnected
+        }
+        return false
+    }
+
+    private suspend fun getCachedStoryFallback(heroName: String, theme: String, setting: String): GeneratedStoryContent? = withContext(Dispatchers.IO) {
+        try {
+            val localStories = storyDao.getAllStories().first()
+            if (localStories.isEmpty()) return@withContext null
+
+            // 1. Try to find local story where the category matches 'theme' and title or content contains 'heroName'
+            val match1 = localStories.find { 
+                it.category.equals(theme, ignoreCase = true) && 
+                (it.title.lowercase().contains(heroName.lowercase()) || it.content.lowercase().contains(heroName.lowercase()))
+            }
+            if (match1 != null) return@withContext match1
+
+            // 2. Try to find any local story where the category matches 'theme'
+            val match2 = localStories.find { it.category.equals(theme, ignoreCase = true) }
+            if (match2 != null) return@withContext match2
+
+            // 3. Try to find any local story containing the heroName
+            val match3 = localStories.find { 
+                it.title.lowercase().contains(heroName.lowercase()) || it.content.lowercase().contains(heroName.lowercase())
+            }
+            if (match3 != null) return@withContext match3
+
+            // 4. Return the most recently viewed or generated story
+            localStories.firstOrNull()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
 
     fun generateStory(heroName: String, theme: String, setting: String, keywords: String, narratorPersona: String = "Gentle Grandma") {
         if (_state.value is GenerationState.Generating) return
         _state.value = GenerationState.Generating
+        _isCachedResult.value = false
         
         viewModelScope.launch {
+            // Cache-first check: if we are offline, use local cached story immediately
+            if (!isNetworkAvailable()) {
+                val cached = getCachedStoryFallback(heroName, theme, setting)
+                if (cached != null) {
+                    _isCachedResult.value = true
+                    _state.value = GenerationState.Success(cached)
+                    return@launch
+                }
+            }
+
             try {
                 // Determine persona styling prompt
                 val personaPrompt = when (narratorPersona) {
@@ -88,24 +142,27 @@ class StoryGenerationViewModel(application: Application) : AndroidViewModel(appl
                 
                 _state.value = GenerationState.Success(story)
             } catch (e: Exception) {
-                _state.value = GenerationState.Error(e.message ?: "Failed to generate story. Have you provided a valid GEMINI_API_KEY?")
+                // Intermittent failure fallback: if online request failed, fetch from local cache as fallback
+                val fallbackCached = getCachedStoryFallback(heroName, theme, setting)
+                if (fallbackCached != null) {
+                    _isCachedResult.value = true
+                    _state.value = GenerationState.Success(fallbackCached)
+                } else {
+                    _state.value = GenerationState.Error(e.message ?: "Failed to generate story. Please check your internet connection or try again later.")
+                }
             }
         }
     }
     
     fun reset() {
         _state.value = GenerationState.Idle
+        _isCachedResult.value = false
     }
 
     private suspend fun generateImagesWithImagen(prompt: String): String = withContext(Dispatchers.IO) {
-        val apiKey = BuildConfig.GEMINI_API_KEY
-        if (apiKey.isBlank() || apiKey == "MY_GEMINI_API_KEY") {
-            return@withContext "https://image.pollinations.ai/prompt/${URLEncoder.encode(prompt, "UTF-8")}"
-        }
-
         try {
             val request = GenerateImagesRequest(prompt = prompt)
-            val response = RetrofitClient.service.generateImages(apiKey, request)
+            val response = RetrofitClient.service.generateImages("Bearer dev-cozy-storytime-token-2026", request)
             val base64Bytes = response.generatedImages?.firstOrNull()?.image?.imageBytes
             if (!base64Bytes.isNullOrBlank()) {
                 val localPath = saveBase64ImageLocally(base64Bytes)
@@ -137,16 +194,11 @@ class StoryGenerationViewModel(application: Application) : AndroidViewModel(appl
     }
 
     private suspend fun generateWithGemini(prompt: String): String = withContext(Dispatchers.IO) {
-        val apiKey = BuildConfig.GEMINI_API_KEY
-        if (apiKey.isBlank() || apiKey == "MY_GEMINI_API_KEY") {
-            throw Exception("Please add your Gemini API Key in the AI Studio Secrets panel.")
-        }
-        
         val request = GenerateContentRequest(
             contents = listOf(Content(parts = listOf(Part(text = prompt))))
         )
         
-        val response = RetrofitClient.service.generateContent(apiKey, request)
+        val response = RetrofitClient.service.generateContent("Bearer dev-cozy-storytime-token-2026", request)
         response.candidates.firstOrNull()?.content?.parts?.firstOrNull()?.text 
             ?: throw Exception("No response text from Gemini API")
     }

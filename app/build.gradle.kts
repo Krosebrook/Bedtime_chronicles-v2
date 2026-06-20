@@ -101,6 +101,7 @@ dependencies {
   implementation(libs.retrofit.converter.serialization)
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.mmkv)
+  implementation(libs.lottie.compose)
   testImplementation(libs.androidx.compose.ui.test.junit4)
   testImplementation(libs.androidx.core)
   testImplementation(libs.androidx.junit)

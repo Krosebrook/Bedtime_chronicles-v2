@@ -2,6 +2,49 @@
 
 All notable changes to Infinity Heroes: Bedtime Chronicles are documented here.
 
+## [Unreleased] — 2026-06-19 — Animated Bedtime Map, Character TTS & AI Help Sandbox
+
+Deploys rich native elements including an interactive coordinate-grid world map with encounter notifications and motion trails, character-themed Text-to-Speech narrators, and an advanced AI Sandbox with safe content fallbacks.
+
+### Added
+- **Coordinate-Grid Bedtime Map (`AdventureScreen.kt`)**: Implemented an styled local map layout mapping coordinates for distinct regions (Forest, Mountains, Village, Ruins).
+- **Map Region Difficulty Indicators**: Integrated distinct color-coded styling representing regional complexity level (e.g. green for gentle, yellow for cozy, orange for advanced adventures).
+- **Encounter Logs & Entrance Notifications**: Automated clean drop-down notification alerts when traveling to new regions, housing descriptive bedtime random encounter logs (the sleepy snail 🐌, snugly nesting puffbirds 🐦, dream bakers 🍪, or ticking sleep clock 🕰️).
+- **Reanimated Flight Path Animation**: Created a smooth trail travel tracker indicator rendered via custom Compose canvas and spring-physics values matching the moving coordinates.
+- **Interactive Map Landmarks & Pop-ups**: Added responsive touch selectors directly on the map cells which trigger informative pop-up info logs with direct travel command dispatch buttons.
+- **Character-Themed TTS Narrators (`ReaderScreen.kt`/`AdventureScreen.kt`)**: Added adjustable voice profiles allowing kids to switch between themed narrator personalities (Cosmic Chronometer, Lunar Guardian, Space Traveler, Sage Botanist) altering pitch/rate configurations.
+- **Advanced AI Sandbox (`HelpScreen.kt`)**: Engineered a fully functional local-api playground detailing basic guidelines, prompt formula cards, and direct live executions of advanced commands:
+  - **📜 Summarize**: Extracts peaceful reviews + soothing sleep mantras.
+  - **🌐 Translate**: Formulates translations (Spanish or Japanese) side-by-side with original greetings.
+  - **🌸 Cozy Poem**: Composes custom 4-line rhyming bedtime lullabies.
+  - **❓ Calm Quiz**: Structures friendly, reassuring memory matching questions.
+- **Adaptive Child Safety fallbacks**: Created dependable offline mock buffers for all advanced sandbox queries to guarantee standard children's service during database or net latency delays.
+
+## [Unreleased] — 2026-06-18 — Hero Backstory Forge & Cosmic Satchel Inventory
+
+Polished native additions including a structured Hero Backstory Builder powered by Gemini AI, and a client-side limited-capacity inventory satchel to enrich interactive bedtime storytelling.
+
+### Added
+- **Idle Creation Tooltip**: Added a bouncing, contextual "Tap to Create!" tooltip and long-press accessibility popups above the primary action button to better onboard new users without blocking the interface.
+- **Full-Screen Immersive Satchel Modal**: Engineered a high-fidelity, highly tactile full-screen `Dialog` overlay with deep space midnight backgrounds and glowing neon item-specific outlines. Formally captured the adaptive window size splitting that organizes components into double-column side-by-side structures on tablets, and scrolling compact chip selectors on standard mobile screens.
+- **Bedtime Artifact Chamber**: Implemented custom detail panels highlighting primary magical sleep effects, extensive lore/mythology backstories, and real-time choice interaction buttons supporting instantaneous influence commands.
+- **Hero Backstory Generator**: Introduced a high-fidelity selective backstory creator in `CharacterCreatorView` using predefined scrollable options covering Hero Origins, Motivations, and Significant Past Milestones. Powered by Gemini API via `generateDetailedBackstory` with beautiful local fallback stories when offline.
+- **Cosmic Satchel Subsystem**: Created a client-side limited-capacity (max 5 items) inventory list inside `ActivePlay` state and `AdventureSaveState` database entity to persist magical items during interactive gameplay. Documented the client-to-database persistent inventory tracking limit and "Search Surroundings" interactive actions.
+
+## [Unreleased] — 2026-06-17 — Native Hero Expansion & Offline Sync Support
+
+Targeted integration of expanded hero assets across both iOS/Android cross-platform applications and pure Native Android equivalents, alongside robust offline interaction queueing.
+
+### Added
+- **Expanded Hero Roster**: Added an expanded constellation of heroes (Nova Engineer, Star Knight, Void Keeper, Gearheart, Celestial, Prism, Starweaver, Botanist, Crystal Knight) covering diverse new cosmic mechanics to both the React Native (`heroes.ts`) and Native Android (`BedtimeAssets.kt`) applications.
+- **Hero Avatar Overrides (React Native)**: Updated `HeroCard.tsx` to handle optional static local `.png` asset backgrounds, smoothly degrading back to colored Ionicons when unavailable. 
+- **Offline Sync Queue Engine**: Implemented `sync-queue.ts` and `useSyncOffline.ts` inside the React Native application. This safely caches user interaction events — `like`, `unlike`, and `story_completion` — whenever device telemetry indicates a weak or dropped network connection.
+- **Auto-Restoration Connectivity Hook**: Interactions cached within `sync-queue.ts` automatically dispatch back to the `api/sync/interactions` backend immediately upon restoring network integrity via `useSyncOffline.ts` integration.
+
+### Changed
+- **Badge Unlocks**: Dynamically adjusted the 'Hero Collector' (`all-heroes`) badge threshold from 8 to 9, accommodating the expanded primary hero roster inside Android Room Database logic (`ReaderScreen.kt`/`BedtimeAssets.kt`) and the React Native persistence layer (`storage.ts`).
+- **Interaction Push Strategies**: Modded `completion.tsx`, `library.tsx`, and `saved.tsx` to favor graceful degradation — pushing `apiRequest` interactions directly while online, or shunting payload into `queueInteraction` when unreachable.
+
 ## [Unreleased] — 2026-06-13 — Production infrastructure + Phase 4 completion
 
 Phase 4 completion (routes.ts migration) and Phase 5 prep (production infrastructure via

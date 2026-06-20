@@ -28,6 +28,10 @@ fun LibraryScreen(onBack: () -> Unit, onNavigateToStory: (String) -> Unit) {
     val stories by viewModel.stories.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val prefs = remember { com.example.data.AppPreferences.getInstance(context) }
+    val autoplayNext by prefs.autoplayNext.collectAsStateWithLifecycle()
+    
     var selectedGenre by remember { mutableStateOf<String?>("All") }
     var recentlyViewedList by remember { mutableStateOf(emptyList<GeneratedStoryContent>()) }
 
@@ -102,6 +106,49 @@ fun LibraryScreen(onBack: () -> Unit, onNavigateToStory: (String) -> Unit) {
                             )
                         )
                     }
+                }
+
+                // Autoplay Next Series Toggle Banner
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 6.dp)
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f), androidx.compose.foundation.shape.RoundedCornerShape(12.dp))
+                        .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.1f), androidx.compose.foundation.shape.RoundedCornerShape(12.dp))
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        modifier = Modifier.weight(1f),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "🔄",
+                            fontSize = 20.sp,
+                            modifier = Modifier.padding(end = 10.dp)
+                        )
+                        Column {
+                            Text(
+                                "Auto-play Next Bedtime Story",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                "Conclude one tale, begin the next series episode",
+                                fontSize = 11.sp,
+                                color = Slate400
+                            )
+                        }
+                    }
+                    Switch(
+                        checked = autoplayNext,
+                        onCheckedChange = { prefs.setAutoplayNext(it) },
+                        colors = SwitchDefaults.colors(checkedThumbColor = MaterialTheme.colorScheme.primary),
+                        modifier = Modifier.testTag("library_autoplay_next_toggle")
+                    )
                 }
 
                 if (selectedGenre == "Recently Viewed") {

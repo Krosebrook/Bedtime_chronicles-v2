@@ -25,7 +25,7 @@ export function registerHealthRoutes(app: Express): void {
   });
 
   app.get("/privacy", (_req, res) => {
-    const privacyPath = path.resolve(process.cwd(), "server", "templates", "privacy-policy.html");
+    const privacyPath = path.resolve(process.cwd(), "privacy-policy.html");
     res.sendFile(privacyPath, (err) => {
       if (err && !res.headersSent) {
         res.status(404).json({ error: "Privacy policy not found" });

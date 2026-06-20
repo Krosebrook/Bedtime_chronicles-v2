@@ -31,6 +31,9 @@ import { StarField } from "@/components/StarField";
 import { StoryFull, EarnedBadge } from "@/constants/types";
 import { saveStory, saveStoryWithProfile, saveStoryScene, updateStreak, checkAndAwardBadges, markStoryRead, updateFeedback, setOnboardingComplete } from "@/lib/storage";
 import { useProfile } from "@/lib/ProfileContext";
+import { queryClient, apiRequest } from "./query-client";
+import NetInfo from "@react-native-community/netinfo";
+import { queueInteraction } from "./sync-queue";
 
 const MODE_THEMES = {
   classic: {
@@ -186,6 +189,28 @@ export default function CompletionScreen() {
           } catch (e) {
             if (__DEV__) console.log("Error marking story as read:", e);
           }
+          queryClient.invalidateQueries({ queryKey: ["stories"] });
+          queryClient.invalidateQueries({ queryKey: ["readStories"] });
+
+          // Queue story completion integration
+          try {
+            const netStatus = await NetInfo.fetch();
+            const isOnline = netStatus.isConnected && netStatus.isInternetReachable !== false;
+            if (isOnline) {
+              await apiRequest("POST", "api/sync/interactions", {
+                interactions: [{
+                  id: `act_${Math.random().toString(36).substring(2, 11)}`,
+                  type: "story_completion",
+                  storyId: storyId,
+                  timestamp: Date.now()
+                }]
+              });
+            } else {
+              await queueInteraction("story_completion", storyId);
+            }
+          } catch {
+            await queueInteraction("story_completion", storyId);
+          }
         }
         const earned = await checkAndAwardBadges(
           activeProfile.id,
@@ -208,6 +233,7 @@ export default function CompletionScreen() {
     if (!storyData || !hero || saved) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     await saveStory(storyData, hero.id, mode || "classic");
+    queryClient.invalidateQueries({ queryKey: ["stories"] });
     setSaved(true);
   }, [storyData, hero, mode, saved]);
 

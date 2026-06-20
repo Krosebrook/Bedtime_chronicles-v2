@@ -139,6 +139,12 @@ const MODE_DEFAULT_SPEED: Record<ModeId, string> = {
   sleep: "gentle",
 };
 
+const MUSIC_PRESETS = [
+  { id: "classic", label: "Handcrafted", desc: "Sleepy loops", icon: "musical-notes-outline" as const },
+  { id: "lyria-clip", label: "AI Theme", desc: "Lyria-3 30s block", icon: "sparkles-outline" as const },
+  { id: "lyria-pro", label: "AI Symphony", desc: "Lyria-3 Pro score", icon: "infinite-outline" as const },
+];
+
 
 export default function CreateScreen() {
   const insets = useSafeAreaInsets();
@@ -152,6 +158,7 @@ export default function CreateScreen() {
   const [previewLoading, setPreviewLoading] = useState<string | null>(null);
   const previewSoundRef = useRef<Audio.Sound | null>(null);
   const [speed, setSpeed] = useState(MODE_DEFAULT_SPEED["classic"]);
+  const [musicType, setMusicType] = useState("classic");
   const [jarVisible, setJarVisible] = useState(false);
   const [settingsVisible, setSettingsVisible] = useState(false);
   const [profileVisible, setProfileVisible] = useState(false);
@@ -308,17 +315,17 @@ export default function CreateScreen() {
     if (mode === "madlibs") {
       router.push({
         pathname: "/madlibs",
-        params: { heroId: hero.id, duration, voice, speed },
+        params: { heroId: hero.id, duration, voice, speed, musicType },
       });
     } else if (mode === "sleep") {
       router.push({
         pathname: "/sleep-setup",
-        params: { heroId: hero.id, duration, voice, speed },
+        params: { heroId: hero.id, duration, voice, speed, musicType },
       });
     } else {
       router.push({
         pathname: "/story",
-        params: { heroId: hero.id, duration, voice, mode: "classic", speed },
+        params: { heroId: hero.id, duration, voice, mode: "classic", speed, musicType },
       });
     }
   };
@@ -730,7 +737,59 @@ export default function CreateScreen() {
           </View>
         </Animated.View>
 
-        <Animated.View entering={FadeInUp.duration(600).delay(400)}>
+        {/* BEDTIME SOUNDTRACK (LYRIA) Section */}
+        <Animated.View
+          entering={FadeInDown.duration(500).delay(380)}
+        >
+          <View style={s.sectionHeader}>
+            <Ionicons name="musical-notes-outline" size={14} color={theme.accent} />
+            <Text style={s.sectionLabel}>BEDTIME SOUNDTRACK</Text>
+            <View style={s.aiBadge}>
+              <Ionicons name="sparkles" size={8} color="#FFF" />
+              <Text style={s.aiBadgeText}>AI LYRIA</Text>
+            </View>
+          </View>
+          <View style={s.speedRow}>
+            {MUSIC_PRESETS.map((mp) => {
+              const isActive = musicType === mp.id;
+              return (
+                <Pressable
+                  key={mp.id}
+                  onPress={() => {
+                    Haptics.selectionAsync();
+                    setMusicType(mp.id);
+                  }}
+                  style={[
+                    s.speedChip,
+                    isActive && { borderColor: theme.accent, backgroundColor: `${theme.accent}18` },
+                  ]}
+                  testID={`music-${mp.id}`}
+                  accessibilityLabel={`Bedtime music: ${mp.label}`}
+                  accessibilityRole="button"
+                >
+                  <View
+                    style={[
+                      s.voiceChipDot,
+                      isActive && { backgroundColor: theme.accent },
+                    ]}
+                  >
+                    <Ionicons
+                      name={mp.icon}
+                      size={13}
+                      color={isActive ? "#FFF" : "rgba(255,255,255,0.4)"}
+                    />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={[s.voiceChipName, isActive && { color: "#FFF" }]} numberOfLines={1}>{mp.label}</Text>
+                    <Text style={[s.voiceChipDesc, isActive && { color: theme.accent }]} numberOfLines={1}>{mp.desc}</Text>
+                  </View>
+                </Pressable>
+              );
+            })}
+          </View>
+        </Animated.View>
+
+        <Animated.View entering={FadeInUp.duration(600).delay(450)}>
           <Pressable
             onPress={handleEngage}
             style={({ pressed }) => [
@@ -1157,6 +1216,22 @@ const s = StyleSheet.create({
   suggestionApplyText: {
     fontFamily: "PlusJakartaSans_700Bold",
     fontSize: 12,
+    color: "#FFF",
+    letterSpacing: 0.5,
+  },
+  aiBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+    backgroundColor: "rgba(168, 85, 247, 0.4)",
+    marginLeft: "auto",
+  },
+  aiBadgeText: {
+    fontFamily: "PlusJakartaSans_700Bold",
+    fontSize: 8,
     color: "#FFF",
     letterSpacing: 0.5,
   },

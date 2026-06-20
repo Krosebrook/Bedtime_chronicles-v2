@@ -14,6 +14,8 @@ interface HeroCardProps {
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - 52) / 2;
 
+import { Image } from 'react-native';
+
 export function HeroCard({ hero, onPress }: HeroCardProps) {
   return (
     <Pressable
@@ -35,7 +37,11 @@ export function HeroCard({ hero, onPress }: HeroCardProps) {
         style={styles.gradient}
       >
         <View style={styles.iconWrap}>
-          <Ionicons name={hero.iconName} size={36} color={hero.color} />
+          {hero.image ? (
+            <Image source={hero.image} style={styles.heroImage} />
+          ) : (
+            <Ionicons name={hero.iconName} size={36} color={hero.color} />
+          )}
         </View>
         <Text style={styles.name}>{hero.name}</Text>
         <Text style={styles.title}>{hero.title}</Text>
@@ -73,6 +79,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
+    overflow: 'hidden',
+  },
+  heroImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
   },
   name: {
     fontFamily: 'PlusJakartaSans_800ExtraBold',

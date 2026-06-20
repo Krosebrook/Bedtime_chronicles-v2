@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import {
   View,
   Text,
@@ -9,12 +9,13 @@ import {
   Alert,
   Dimensions,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useFocusEffect, router } from "expo-router";
-import Animated, { FadeInDown } from "react-native-reanimated";
+import Animated, { FadeInDown, FadeIn, FadeOut } from "react-native-reanimated";
 import Colors from "@/constants/colors";
 import { StarField } from "@/components/StarField";
 import { useProfile } from "@/lib/ProfileContext";
@@ -22,6 +23,11 @@ import { HEROES } from "@/constants/heroes";
 
 import { CachedStory } from "@/constants/types";
 import { getAllStories, deleteStory, getFavorites, toggleFavorite } from "@/lib/storage";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import NetInfo from "@react-native-community/netinfo";
+import { queueInteraction } from "./sync-queue";
+import { apiRequest } from "./query-client";
+import { useSyncOffline } from "./useSyncOffline";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -46,29 +52,30 @@ export default function SavedScreen() {
   const insets = useSafeAreaInsets();
   const topInset = Platform.OS === "web" ? 67 : insets.top;
   const { activeProfile } = useProfile();
-  const [savedStories, setSavedStories] = useState<CachedStory[]>([]);
-  const [favorites, setFavorites] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const { isSyncing } = useSyncOffline();
+
+  const { data: allStories = [], isLoading: isStoriesLoading, refetch: refetchStories } = useQuery<CachedStory[]>({
+    queryKey: ["stories", "all"],
+    queryFn: getAllStories,
+    staleTime: Infinity,
+  });
+
+  const { data: favorites = [], isLoading: isFavoritesLoading, refetch: refetchFavorites } = useQuery<string[]>({
+    queryKey: ["favorites"],
+    queryFn: getFavorites,
+    staleTime: Infinity,
+  });
+
+  const savedStories = useMemo(() => {
+    return allStories.filter((s) => favorites.includes(s.id));
+  }, [allStories, favorites]);
 
   useFocusEffect(
     useCallback(() => {
-      let cancelled = false;
-      async function load() {
-        setIsLoading(true);
-        const [allStories, favIds] = await Promise.all([
-          getAllStories(),
-          getFavorites(),
-        ]);
-        if (!cancelled) {
-          const favStories = allStories.filter((s) => favIds.includes(s.id));
-          setSavedStories(favStories);
-          setFavorites(favIds);
-          setIsLoading(false);
-        }
-      }
-      load();
-      return () => { cancelled = true; };
-    }, [activeProfile])
+      refetchStories();
+      refetchFavorites();
+    }, [refetchStories, refetchFavorites])
   );
 
   const handleUnfavorite = async (id: string, title: string) => {
@@ -79,12 +86,34 @@ export default function SavedScreen() {
         style: "destructive",
         onPress: async () => {
           const updated = await toggleFavorite(id);
-          setFavorites(updated);
-          setSavedStories((prev) => prev.filter((s) => s.id !== id));
+          queryClient.setQueryData(["favorites"], updated);
+          queryClient.invalidateQueries({ queryKey: ["stories"] });
+
+          // Queue synchronization logic
+          try {
+            const netStatus = await NetInfo.fetch();
+            const isOnline = netStatus.isConnected && netStatus.isInternetReachable !== false;
+            if (isOnline) {
+              await apiRequest("POST", "api/sync/interactions", {
+                interactions: [{
+                  id: `act_${Math.random().toString(36).substring(2, 11)}`,
+                  type: "unlike",
+                  storyId: id,
+                  timestamp: Date.now()
+                }]
+              });
+            } else {
+              await queueInteraction("unlike", id);
+            }
+          } catch {
+            await queueInteraction("unlike", id);
+          }
         },
       },
     ]);
   };
+
+  const isLoading = isStoriesLoading || isFavoritesLoading;
 
   const getHero = (heroId: string) => HEROES.find((h) => h.id === heroId);
 
@@ -101,6 +130,7 @@ export default function SavedScreen() {
             router.push({
               pathname: "/story",
               params: {
+                storyId: item.id,
                 heroId: item.heroId,
                 mode: item.mode,
                 duration: "medium",
@@ -159,10 +189,21 @@ export default function SavedScreen() {
       <View style={[styles.header, { paddingTop: topInset + 12 }]}>
         <Ionicons name="heart" size={22} color="#f43f5e" />
         <Text style={styles.headerTitle}>Saved Stories</Text>
-        {savedStories.length > 0 && (
-          <View style={styles.countBadge}>
-            <Text style={styles.countText}>{savedStories.length}</Text>
-          </View>
+        {isSyncing ? (
+          <Animated.View 
+            entering={FadeIn.duration(300)} 
+            exiting={FadeOut.duration(300)} 
+            style={styles.savedSyncBadge}
+          >
+            <ActivityIndicator size="small" color="#f43f5e" style={{ marginRight: 4 }} />
+            <Text style={styles.savedSyncText}>Syncing...</Text>
+          </Animated.View>
+        ) : (
+          savedStories.length > 0 && (
+            <View style={styles.countBadge}>
+              <Text style={styles.countText}>{savedStories.length}</Text>
+            </View>
+          )
         )}
       </View>
 
@@ -322,5 +363,22 @@ const styles = StyleSheet.create({
     color: "rgba(255,255,255,0.4)",
     textAlign: "center",
     lineHeight: 20,
+  },
+  savedSyncBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(244, 63, 94, 0.12)",
+    borderWidth: 1,
+    borderColor: "rgba(244, 63, 94, 0.3)",
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  savedSyncText: {
+    fontFamily: "PlusJakartaSans_700Bold",
+    fontSize: 10,
+    color: "#f43f5e",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
   },
 });

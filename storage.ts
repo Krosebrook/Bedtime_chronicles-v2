@@ -455,3 +455,78 @@ export async function getParentControls(): Promise<ParentControls> {
 export async function saveParentControls(controls: ParentControls): Promise<void> {
   await AsyncStorage.setItem(PARENT_CONTROLS_KEY, JSON.stringify(controls));
 }
+
+const READING_PROGRESS_PREFIX = "@infinity_heroes_reading_progress_";
+const ACTIVE_SESSION_KEY = "@infinity_heroes_active_session";
+
+export interface ActiveReadingSession {
+  storyData: StoryFull;
+  currentPartIndex: number;
+  storyId?: string;
+  heroId: string;
+  mode: string;
+  duration?: string;
+  voice?: string;
+  speed?: string;
+  sleepTimer?: string;
+  soundscape?: string;
+  setting?: string;
+  tone?: string;
+  childName?: string;
+  sidekick?: string;
+  problem?: string;
+  timestamp: number;
+}
+
+export async function saveStoryReadingProgress(storyKey: string, partIndex: number): Promise<void> {
+  try {
+    const key = `${READING_PROGRESS_PREFIX}${storyKey.replace(/\s+/g, "_").toLowerCase()}`;
+    await AsyncStorage.setItem(key, partIndex.toString());
+  } catch (error) {
+    if (__DEV__) console.error("Error saving story reading progress:", error);
+  }
+}
+
+export async function getStoryReadingProgress(storyKey: string): Promise<number | null> {
+  try {
+    const key = `${READING_PROGRESS_PREFIX}${storyKey.replace(/\s+/g, "_").toLowerCase()}`;
+    const value = await AsyncStorage.getItem(key);
+    return value !== null ? parseInt(value, 10) : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function clearStoryReadingProgress(storyKey: string): Promise<void> {
+  try {
+    const key = `${READING_PROGRESS_PREFIX}${storyKey.replace(/\s+/g, "_").toLowerCase()}`;
+    await AsyncStorage.removeItem(key);
+  } catch {
+    // ignore
+  }
+}
+
+export async function saveActiveReadingSession(session: ActiveReadingSession): Promise<void> {
+  try {
+    await AsyncStorage.setItem(ACTIVE_SESSION_KEY, JSON.stringify(session));
+  } catch (error) {
+    if (__DEV__) console.error("Error saving active reading session:", error);
+  }
+}
+
+export async function getActiveReadingSession(): Promise<ActiveReadingSession | null> {
+  try {
+    const data = await AsyncStorage.getItem(ACTIVE_SESSION_KEY);
+    return data ? JSON.parse(data) : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function clearActiveReadingSession(): Promise<void> {
+  try {
+    await AsyncStorage.removeItem(ACTIVE_SESSION_KEY);
+  } catch {
+    // ignore
+  }
+}

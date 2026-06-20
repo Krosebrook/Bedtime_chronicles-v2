@@ -37,7 +37,8 @@ import com.example.util.AmbientSoundHelper
 import com.example.util.TextToSpeechHelper
 import com.example.viewmodel.ReaderViewModel
 import kotlinx.coroutines.delay
-import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.zIndex
 
 enum class ReaderStep {
     READING,
@@ -96,6 +97,15 @@ fun ReaderScreen(storyId: String?, onBack: () -> Unit) {
     val prefs = remember { AppPreferences.getInstance(context) }
     val isMidnightMode by prefs.isMidnightMode.collectAsStateWithLifecycle()
     
+    var activeStoryId by remember { mutableStateOf(storyId ?: "") }
+    val safeStoryId = activeStoryId
+
+    val allStories by viewModel.allStories.collectAsStateWithLifecycle()
+    val autoplayNext by prefs.autoplayNext.collectAsStateWithLifecycle()
+    
+    var activeAutoplayBannerText by remember { mutableStateOf<String?>(null) }
+    var autoplayPendingStart by remember { mutableStateOf(false) }
+
     var isReading by remember { mutableStateOf(false) }
     var ttsInitialized by remember { mutableStateOf(false) }
     var activeSentenceIndex by remember { mutableStateOf(-1) }
@@ -106,9 +116,9 @@ fun ReaderScreen(storyId: String?, onBack: () -> Unit) {
     var savedToLibrary by remember { mutableStateOf(false) }
     var showTrophiesSheet by remember { mutableStateOf(false) }
 
-    val randomVocabWord = remember(storyId) {
-        val wordIndex = if (storyId != null) {
-            val h = storyId.hashCode()
+    val randomVocabWord = remember(activeStoryId) {
+        val wordIndex = if (activeStoryId.isNotEmpty()) {
+            val h = activeStoryId.hashCode()
             if (h < 0) {
                 if (h == Int.MIN_VALUE) 0 else -h
             } else {
@@ -128,12 +138,12 @@ fun ReaderScreen(storyId: String?, onBack: () -> Unit) {
     var sleepTimerRemainingSeconds by remember { mutableStateOf(0) }
     var showTimerDialog by remember { mutableStateOf(false) }
     var showAmbientDialog by remember { mutableStateOf(false) }
+    var showVoiceDialog by remember { mutableStateOf(false) }
+    val currentNarrator by prefs.ttsNarrator.collectAsStateWithLifecycle()
     
     // Progress Resume Dialog state
     var showResumeToast by remember { mutableStateOf(false) }
     var savedProgressIndex by remember { mutableStateOf(0) }
-
-    val safeStoryId = storyId ?: ""
 
     // Split sentences helper
     fun splitIntoSentences(text: String): List<String> {
@@ -166,10 +176,34 @@ fun ReaderScreen(storyId: String?, onBack: () -> Unit) {
                         speakSentence(sentences[nextIndex], nextIndex.toString())
                         prefs.setStoryProgress(safeStoryId, nextIndex)
                     } else {
-                        isReading = false
-                        activeSentenceIndex = -1
-                        prefs.setStoryProgress(safeStoryId, 0)
-                        currentStep = ReaderStep.VOCAB
+                        val currentStory = story
+                        if (autoplayNext && currentStory != null) {
+                            val seriesCategory = currentStory.category
+                            val seriesStories = allStories
+                                .filter { it.category.equals(seriesCategory, ignoreCase = true) }
+                                .sortedBy { it.createdAt }
+                            
+                            val currentIdx = seriesStories.indexOfFirst { it.id == currentStory.id }
+                            if (currentIdx != -1 && currentIdx + 1 < seriesStories.size) {
+                                val nextStory = seriesStories[currentIdx + 1]
+                                activeAutoplayBannerText = "Up Next in Series: ${nextStory.title} 🌌"
+                                autoplayPendingStart = true
+                                isReading = false
+                                activeSentenceIndex = 0
+                                prefs.setStoryProgress(safeStoryId, 0)
+                                activeStoryId = nextStory.id
+                            } else {
+                                isReading = false
+                                activeSentenceIndex = -1
+                                prefs.setStoryProgress(safeStoryId, 0)
+                                currentStep = ReaderStep.VOCAB
+                            }
+                        } else {
+                            isReading = false
+                            activeSentenceIndex = -1
+                            prefs.setStoryProgress(safeStoryId, 0)
+                            currentStep = ReaderStep.VOCAB
+                        }
                     }
                 }
             }
@@ -185,14 +219,44 @@ fun ReaderScreen(storyId: String?, onBack: () -> Unit) {
         }
     }
 
+    // Dismiss active autoplay banner after delay
+    LaunchedEffect(activeAutoplayBannerText) {
+        if (activeAutoplayBannerText != null) {
+            delay(5000L)
+            activeAutoplayBannerText = null
+        }
+    }
+
     // Load story and fetch initial progress
-    LaunchedEffect(storyId) {
-        if (storyId != null) {
-            viewModel.loadStory(storyId)
-            val saved = prefs.getStoryProgress(storyId)
+    LaunchedEffect(activeStoryId) {
+        if (activeStoryId.isNotEmpty()) {
+            viewModel.loadStory(activeStoryId)
+            val saved = prefs.getStoryProgress(activeStoryId)
             if (saved > 0) {
                 savedProgressIndex = saved
                 showResumeToast = true
+            } else {
+                savedProgressIndex = 0
+                showResumeToast = false
+            }
+        }
+    }
+
+    // Trigger autoplay of the next story after it loads
+    LaunchedEffect(story) {
+        val currentStory = story
+        if (currentStory != null && autoplayPendingStart) {
+            autoplayPendingStart = false
+            delay(1500L) // Bedtime spacer pause
+            while (!ttsInitialized) {
+                delay(100L)
+            }
+            val newSentences = splitIntoSentences(currentStory.content)
+            if (newSentences.isNotEmpty()) {
+                activeSentenceIndex = 0
+                isReading = true
+                ttsHelper.speakSentence(newSentences[0], "0")
+                prefs.setStoryProgress(currentStory.id, 0)
             }
         }
     }
@@ -293,6 +357,16 @@ fun ReaderScreen(storyId: String?, onBack: () -> Unit) {
                                 contentDescription = if (isMidnightMode) "Switch to Light Theme" else "Switch to Night Mode (Warm)"
                             )
                         }
+                        IconButton(
+                            onClick = { showVoiceDialog = true },
+                            modifier = Modifier.testTag("reader_voice_toggle")
+                        ) {
+                            Icon(
+                                Icons.Default.Hearing,
+                                tint = if (currentNarrator != "default") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                contentDescription = "Character Voices"
+                            )
+                        }
                         IconButton(onClick = { showAmbientDialog = true }) {
                             Icon(
                                 Icons.Default.Star,
@@ -316,31 +390,72 @@ fun ReaderScreen(storyId: String?, onBack: () -> Unit) {
         }
     ) { paddingValues ->
         Box(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
-            if (currentStep == ReaderStep.READING) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .padding(horizontal = 24.dp)
+            AnimatedVisibility(
+                visible = activeAutoplayBannerText != null,
+                enter = fadeIn() + slideInVertically(initialOffsetY = { -it }),
+                exit = fadeOut() + slideOutVertically(targetOffsetY = { -it }),
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(16.dp)
+                    .zIndex(99f)
+            ) {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    ),
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                    modifier = Modifier.fillMaxWidth().testTag("autoplay_banner")
                 ) {
-                // Progressive Bedtime Reading Tracking Bar (moved to top edge)
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("📖", fontSize = 24.sp)
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column {
+                            Text(
+                                "Bedtime Series Autoplay",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                activeAutoplayBannerText ?: "",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.85f)
+                            )
+                        }
+                    }
+                }
+            }
+
+            if (currentStep == ReaderStep.READING) {
                 val progress = if (sentences.isNotEmpty()) {
                     ((activeSentenceIndex + 1).toFloat() / sentences.size.toFloat()).coerceIn(0f, 1f)
                 } else {
                     0f
                 }
-                
-                LinearProgressIndicator(
-                    progress = progress,
-                    color = MaterialTheme.colorScheme.primary,
-                    trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(4.dp)
-                        .clip(RoundedCornerShape(bottomStart = 2.dp, bottomEnd = 2.dp))
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
+                Column(modifier = Modifier.fillMaxSize()) {
+                    LinearProgressIndicator(
+                        progress = progress,
+                        color = MaterialTheme.colorScheme.primary,
+                        trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(4.dp)
+                            .testTag("reading_progress_bar")
+                    )
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .verticalScroll(rememberScrollState())
+                            .padding(horizontal = 24.dp)
+                    ) {
+                        Spacer(modifier = Modifier.height(16.dp))
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -758,6 +873,7 @@ fun ReaderScreen(storyId: String?, onBack: () -> Unit) {
                 
                 Spacer(modifier = Modifier.height(120.dp))
             }
+        }
 
             // Beautiful Bottom Bedtime Media Controls Overlay Sheet
             Box(
@@ -968,11 +1084,48 @@ fun ReaderScreen(storyId: String?, onBack: () -> Unit) {
                                 )
                             )
                         }
+
+                        // Bedtime Autoplay Series Switch
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.08f))
+                                .clickable { prefs.setAutoplayNext(!autoplayNext) }
+                                .padding(horizontal = 12.dp, vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    Icons.Default.Refresh,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Auto-play Next Series Story",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                            }
+                            Switch(
+                                checked = autoplayNext,
+                                onCheckedChange = { prefs.setAutoplayNext(it) },
+                                colors = SwitchDefaults.colors(checkedThumbColor = MaterialTheme.colorScheme.primary),
+                                modifier = Modifier
+                                    .scale(0.8f)
+                                    .testTag("reader_autoplay_next_toggle")
+                            )
+                        }
                     }
                 }
             }
         } else {
-                when (currentStep) {
+            when (currentStep) {
                     ReaderStep.VOCAB -> {
                         VocabScreen(word = randomVocabWord, ttsHelper = ttsHelper) {
                             prefs.incrementVocabularyWordsLearnedCount()
@@ -1038,7 +1191,7 @@ fun ReaderScreen(storyId: String?, onBack: () -> Unit) {
                             }
                             
                             // 6. Hero Collector Checklist Checked
-                            if (prefs.getUsedHeroesCount() >= 8) {
+                            if (prefs.getUsedHeroesCount() >= 9) {
                                 prefs.unlockBadge("all-heroes")
                             }
                             
@@ -1202,6 +1355,91 @@ fun ReaderScreen(storyId: String?, onBack: () -> Unit) {
             confirmButton = {
                 TextButton(onClick = { showAmbientDialog = false }) {
                     Text("Close", color = MaterialTheme.colorScheme.tertiary)
+                }
+            },
+            containerColor = MaterialTheme.colorScheme.surface
+        )
+    }
+
+    // Character Voice Selector Dialog
+    if (showVoiceDialog) {
+        AlertDialog(
+            onDismissRequest = { showVoiceDialog = false },
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Default.Hearing,
+                        contentDescription = "Character Voices",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                    Text("Choose Story Teller Voice", style = MaterialTheme.typography.titleMedium, color = Color.White)
+                }
+            },
+            text = {
+                Column {
+                    Text(
+                        "Select a soothing bedtime narrator voice to guide your child peaceably into dreamland.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Slate300,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                    
+                    val narrators = listOf(
+                        Triple("default", "Standard Storyteller", "🎙️ Warm & natural bedtime voice"),
+                        Triple("cosmic_sage", "Cosmic Sage", "🧙‍♂️ Deep, wise & mystical"),
+                        Triple("starlight_sprite", "Starlight Sprite", "🧚‍♀️ Light, bright & bubbly"),
+                        Triple("gentle_dreamer", "Gentle Dreamer", "🌙 Soft, slow & soothing")
+                    )
+                    
+                    narrators.forEach { (id, name, desc) ->
+                        val isSelected = currentNarrator == id
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                                .clickable {
+                                    prefs.setTtsNarrator(id)
+                                    // Live updates the speech options
+                                    ttsHelper.stop()
+                                    // if isReading was active, restart current index with the new voice
+                                    if (isReading && activeSentenceIndex >= 0 && activeSentenceIndex < sentences.size) {
+                                        ttsHelper.speakSentence(sentences[activeSentenceIndex], activeSentenceIndex.toString())
+                                    }
+                                }
+                                .testTag("reader_narrator_voice_$id"),
+                            colors = CardDefaults.cardColors(
+                                containerColor = if (isSelected) {
+                                    MaterialTheme.colorScheme.primaryContainer
+                                } else {
+                                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                                }
+                            ),
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 12.dp, horizontal = 16.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(name, color = Color.White, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodyMedium)
+                                    Spacer(modifier = Modifier.height(2.dp))
+                                    Text(desc, color = Slate300, style = MaterialTheme.typography.bodySmall)
+                                }
+                                if (isSelected) {
+                                    Text("Active", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelMedium)
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showVoiceDialog = false }) {
+                    Text("Done", color = MaterialTheme.colorScheme.primary)
                 }
             },
             containerColor = MaterialTheme.colorScheme.surface

@@ -34,10 +34,18 @@ import { SleepTimerBar } from "@/components/SleepTimerBar";
 import { StoryTextDisplay } from "@/components/StoryTextDisplay";
 import { StoryProgressBar } from "@/components/StoryProgressBar";
 import { StoryChoices } from "@/components/StoryChoices";
+import {
+  getStoryReadingProgress,
+  saveStoryReadingProgress,
+  clearStoryReadingProgress,
+  saveActiveReadingSession,
+  clearActiveReadingSession,
+} from "@/lib/storage";
 
 export default function StoryScreen() {
-  const { heroId, duration, voice, mode, madlibWords, soundscape, sleepTimer, speed: initialSpeed, replayJson, setting, tone, childName, sidekick, problem } =
+  const { storyId, heroId, duration, voice, mode, madlibWords, soundscape, sleepTimer, speed: initialSpeed, replayJson, setting, tone, childName, sidekick, problem, musicType } =
     useLocalSearchParams<{
+      storyId: string;
       heroId: string;
       duration: string;
       voice: string;
@@ -52,6 +60,7 @@ export default function StoryScreen() {
       childName: string;
       sidekick: string;
       problem: string;
+      musicType: string;
     }>();
   const insets = useSafeAreaInsets();
   const topInset = Platform.OS === "web" ? 67 : insets.top;
@@ -79,7 +88,7 @@ export default function StoryScreen() {
   const { loadingMsg, messages } = useLoadingMessages(storyMode);
 
   const { musicMuted, musicLoading, musicPlaying, startBgMusic, stopBgMusic, toggleBgMusic } =
-    useBackgroundMusic(storyMode);
+    useBackgroundMusic(storyMode, storyData?.musicUrl);
 
   const {
     isSpeaking,
@@ -138,6 +147,7 @@ export default function StoryScreen() {
         heroDescription: hero.description,
         duration: duration || "medium",
         mode: storyMode,
+        musicType: musicType || "classic",
       };
 
       if (storyMode === "madlibs" && madlibWords) {
@@ -190,6 +200,48 @@ export default function StoryScreen() {
     };
   }, []);
 
+  // Load reading progress
+  useEffect(() => {
+    if (storyState === "ready" && storyData) {
+      const getProgress = async () => {
+        const progressId = storyId || storyData.title;
+        const savedIndex = await getStoryReadingProgress(progressId);
+        if (savedIndex !== null && savedIndex > 0 && savedIndex < storyData.parts.length) {
+          setCurrentPartIndex(savedIndex);
+          if (__DEV__) console.log(`[Progress] Resumed story reading session at part index: ${savedIndex}`);
+        }
+      };
+      getProgress();
+    }
+  }, [storyState, storyData, storyId]);
+
+  // Auto-save reading progress and active session on change
+  useEffect(() => {
+    if (storyState === "ready" && storyData) {
+      const progressId = storyId || storyData.title;
+      void saveStoryReadingProgress(progressId, currentPartIndex);
+
+      void saveActiveReadingSession({
+        storyData,
+        currentPartIndex,
+        storyId,
+        heroId,
+        mode: storyMode,
+        duration,
+        voice,
+        speed: defaultSpeed,
+        sleepTimer,
+        soundscape,
+        setting,
+        tone,
+        childName,
+        sidekick,
+        problem,
+        timestamp: Date.now(),
+      });
+    }
+  }, [currentPartIndex, storyState, storyData, storyId]);
+
   const handleChoiceSelect = (choiceIndex: number) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     stopAudio();
@@ -199,6 +251,9 @@ export default function StoryScreen() {
 
   const handleStoryComplete = () => {
     if (!hero || !storyData) return;
+    const progressId = storyId || storyData.title;
+    void clearStoryReadingProgress(progressId).catch(() => {});
+    void clearActiveReadingSession().catch(() => {});
     stopAudio();
     stopBgMusic();
     clearSleepTimer();

@@ -83,6 +83,9 @@ export const StoryRequestSchema = z.object({
   childName: optTruncated(50),
   sidekick: optTruncated(100),
   problem: optTruncated(100),
+  musicType: z.string().optional().default('classic').transform((s) =>
+    ['classic', 'lyria-clip', 'lyria-pro'].includes(s) ? s : 'classic'
+  ),
 });
 
 export type StoryRequest = z.output<typeof StoryRequestSchema>;

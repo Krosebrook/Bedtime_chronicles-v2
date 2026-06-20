@@ -35,6 +35,12 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.animation.core.*
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.alpha
+import kotlinx.coroutines.delay
 
 data class StoryCategory(val name: String, val icon: androidx.compose.ui.graphics.vector.ImageVector, val imageUrl: String, val emoji: String = "✨")
 
@@ -55,7 +61,9 @@ fun HomeScreen(
     onNavigateToCreate: () -> Unit,
     onNavigateToLibrary: () -> Unit,
     onNavigateToAdventure: () -> Unit,
-    onNavigateToStickerBook: () -> Unit
+    onNavigateToStickerBook: () -> Unit,
+    onNavigateToHelp: () -> Unit,
+    onNavigateToCharacterCreator: () -> Unit
 ) {
     Scaffold(
         containerColor = Color.Transparent,
@@ -71,6 +79,12 @@ fun HomeScreen(
                     )
                 },
                 actions = {
+                    IconButton(
+                        onClick = onNavigateToHelp,
+                        modifier = Modifier.testTag("home_help_button")
+                    ) {
+                        Icon(imageVector = Icons.Default.HelpOutline, contentDescription = "Help & FAQ", tint = MaterialTheme.colorScheme.primary)
+                    }
                     IconButton(onClick = onNavigateToStickerBook) {
                         Icon(imageVector = Icons.Default.Palette, contentDescription = "Sticker Book", tint = MaterialTheme.colorScheme.primary)
                     }
@@ -199,6 +213,83 @@ fun HomeScreen(
                         imageVector = Icons.Default.ChevronRight,
                         contentDescription = "Navigate to Adventure",
                         tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Celestial Character Creator Launcher Banner
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .clickable { onNavigateToCharacterCreator() }
+                    .testTag("character_creator_launcher_card"),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.08f)
+                ),
+                border = androidx.compose.foundation.BorderStroke(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.2f)
+                ),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(
+                        modifier = Modifier.weight(1f),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(44.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(MaterialTheme.colorScheme.tertiary.copy(alpha = 0.15f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Face,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.tertiary,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Column {
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(4.dp))
+                                    .background(MaterialTheme.colorScheme.tertiary)
+                                    .padding(horizontal = 6.dp, vertical = 2.dp)
+                            ) {
+                                Text(
+                                    "CHARACTER CREATOR",
+                                    fontSize = 8.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                    "Celestial Character Creator",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                            Text(
+                                "Design customized bedtime heroes, appearance, names & stories!",
+                                fontSize = 11.sp,
+                                color = Slate300
+                            )
+                        }
+                    }
+                    Icon(
+                        imageVector = Icons.Default.ChevronRight,
+                        contentDescription = "Navigate to Character Creator",
+                        tint = MaterialTheme.colorScheme.tertiary
                     )
                 }
             }
@@ -469,6 +560,62 @@ fun StoryCard(story: StoryItem, onClick: () -> Unit) {
 
 @Composable
 fun BottomNavigationBar(onNavigateToProfile: () -> Unit, onNavigateToCreate: () -> Unit, onNavigateToLibrary: () -> Unit) {
+    val infiniteTransition = rememberInfiniteTransition(label = "create_button_pulse")
+    val scale by infiniteTransition.animateFloat(
+        initialValue = 1.0f,
+        targetValue = 1.08f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1500, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "button_scale"
+    )
+
+    val shadowScale by infiniteTransition.animateFloat(
+        initialValue = 1.0f,
+        targetValue = 1.4f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1500, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "shadow_scale"
+    )
+
+    val shadowAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.6f,
+        targetValue = 0.0f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1500, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "shadow_alpha"
+    )
+
+    var isPressed by remember { mutableStateOf(false) }
+    val pressScale by animateFloatAsState(
+        targetValue = if (isPressed) 0.88f else 1.0f,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        ),
+        label = "button_press_scale"
+    )
+
+    var showTooltip by remember { mutableStateOf(false) }
+
+    LaunchedEffect(showTooltip) {
+        if (showTooltip) {
+            delay(5000)
+            showTooltip = false
+        }
+    }
+
+    val tooltipAlpha by animateFloatAsState(
+        targetValue = if (showTooltip) 1.0f else 0.0f,
+        animationSpec = tween(durationMillis = 300),
+        label = "tooltip_alpha"
+    )
+
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
         contentColor = Slate500,
@@ -492,18 +639,174 @@ fun BottomNavigationBar(onNavigateToProfile: () -> Unit, onNavigateToCreate: () 
             selected = false,
             onClick = onNavigateToLibrary
         )
-        // Center Create Button
+        
+        // Helper animation for floating tooltip bounce
+        val tooltipBounce by infiniteTransition.animateFloat(
+            initialValue = 0f,
+            targetValue = -8f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(1000, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = "tooltip_bounce"
+        )
+
+        // Center Create Button with Pulse Glow Animation and Tooltip
         Box(
             modifier = Modifier
                 .offset(y = (-16).dp)
-                .size(56.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primary)
-                .clickable { onNavigateToCreate() },
+                .size(72.dp),
             contentAlignment = Alignment.Center
         ) {
-            Icon(Icons.Default.AutoAwesome, contentDescription = "Create", tint = Color.White)
+            // Idle Tooltip to guide new users
+            if (!isPressed && !showTooltip) {
+                Box(
+                    modifier = Modifier
+                        .offset(y = (-56 + tooltipBounce).dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colorScheme.primary)
+                        .padding(horizontal = 10.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        "Tap to Create!",
+                        color = Color.White,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
+            // Pulsing background ring representing the stardust magical glow
+            Box(
+                modifier = Modifier
+                    .size(56.dp)
+                    .scale(shadowScale)
+                    .background(
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = shadowAlpha),
+                        shape = CircleShape
+                    )
+            )
+
+            // Primary Create Button with subtle pulsing scale
+            Box(
+                modifier = Modifier
+                    .size(56.dp)
+                    .scale(scale * pressScale)
+                    .clip(CircleShape)
+                    .background(
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.primary,
+                                MagicPurple
+                            )
+                        )
+                    )
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            onPress = {
+                                isPressed = true
+                                try {
+                                    awaitRelease()
+                                } finally {
+                                    isPressed = false
+                                }
+                            },
+                            onLongPress = {
+                                showTooltip = true
+                            },
+                            onTap = {
+                                onNavigateToCreate()
+                            }
+                        )
+                    }
+                    .testTag("center_create_button"),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.AutoAwesome,
+                    contentDescription = "Create",
+                    tint = Color.White,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
+
+            // Long-press explanation tooltip popup
+            if (showTooltip || tooltipAlpha > 0.0f) {
+                Popup(
+                    alignment = Alignment.TopCenter,
+                    offset = androidx.compose.ui.unit.IntOffset(0, -310),
+                    onDismissRequest = { showTooltip = false },
+                    properties = PopupProperties(focusable = true)
+                ) {
+                    Card(
+                        modifier = Modifier
+                            .width(280.dp)
+                            .padding(8.dp)
+                            .alpha(tooltipAlpha)
+                            .testTag("create_button_tooltip"),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = BackgroundDark,
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(bottom = 8.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.AutoAwesome,
+                                    contentDescription = null,
+                                    tint = MagicPurple,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "AI Bedtime Magic",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                            }
+                            Text(
+                                text = "Weave custom bedtime stories using AI! Choose a brave companion, custom theme, and cozy setting. Our gentle storyteller crafts text and magical scenery illustrations with twilight ambient loops to guide you into a peaceful slumber.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Slate300,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                lineHeight = 16.sp
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Button(
+                                onClick = { showTooltip = false },
+                                modifier = Modifier
+                                    .height(36.dp)
+                                    .testTag("tooltip_dismiss_button"),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary
+                                ),
+                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
+                                shape = RoundedCornerShape(18.dp)
+                            ) {
+                                Text(
+                                    text = "Magic Got It!",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
+                }
+            }
         }
+
         NavigationBarItem(
             icon = { Icon(Icons.Default.Favorite, contentDescription = "Saved") },
             label = { Text("Saved", fontSize = 10.sp) },

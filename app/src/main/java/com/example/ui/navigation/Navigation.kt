@@ -15,7 +15,7 @@ import com.example.ui.screens.ProfileScreen
 import com.example.ui.screens.StoryDetailsScreen
 import com.example.ui.screens.ReaderScreen
 import com.example.ui.screens.TutorialScreen
-
+import com.example.ui.screens.HelpScreen
 import com.example.ui.screens.CreateStoryScreen
 
 import com.example.ui.screens.LibraryScreen
@@ -68,6 +68,12 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
                 },
                 onNavigateToStickerBook = {
                     navController.navigate("sticker_book")
+                },
+                onNavigateToHelp = {
+                    navController.navigate("help")
+                },
+                onNavigateToCharacterCreator = {
+                    navController.navigate("character_creator")
                 }
             )
         }
@@ -89,16 +95,41 @@ fun AppNavigation(navController: NavHostController = rememberNavController()) {
                 }
             )
         }
-        composable("create") {
+        composable("character_creator") {
+            com.example.ui.screens.CharacterCreatorScreen(
+                onBack = { navController.popBackStack() },
+                onLaunchStoryCreation = { heroName ->
+                    navController.navigate("create?heroName=$heroName")
+                }
+            )
+        }
+        composable(
+            route = "create?heroName={heroName}",
+            arguments = listOf(
+                androidx.navigation.navArgument("heroName") {
+                    type = androidx.navigation.NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                }
+            )
+        ) { backStackEntry ->
+            val initialHeroName = backStackEntry.arguments?.getString("heroName")
             CreateStoryScreen(
                 onBack = { navController.popBackStack() },
                 onStoryGenerated = { storyId ->
                     navController.navigate("reader/$storyId")
-                }
+                },
+                initialHeroName = initialHeroName
             )
         }
         composable("profile") {
             ProfileScreen(
+                onBack = { navController.popBackStack() },
+                onNavigateToHelp = { navController.navigate("help") }
+            )
+        }
+        composable("help") {
+            HelpScreen(
                 onBack = { navController.popBackStack() }
             )
         }
