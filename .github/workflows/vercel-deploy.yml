@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  HEALTH_CHECK_URL: "https://bedtime-chronicles.com/api/health"
+  HEALTH_CHECK_URL: "https://www.bedtime-chronicles.com/api/health"
   VERCEL_DEPLOY_HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
 
 jobs:
