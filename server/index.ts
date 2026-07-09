@@ -312,6 +312,13 @@ function configureExpoAndLanding(app: express.Application) {
     }
 
     if (req.path === "/") {
+      const webIndexPath = path.resolve(process.cwd(), "static-build", "index.html");
+      if (fs.existsSync(webIndexPath)) {
+        // Web build is present — fall through to the express.static("static-build")
+        // middleware below so the real app is served instead of the marketing page.
+        return next();
+      }
+
       return serveLandingPage({
         req,
         res,
