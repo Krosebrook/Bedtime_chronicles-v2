@@ -25,7 +25,7 @@ See also: [ADRs](./adr/) for individual architectural decisions.
 │  │  → Rate Limiter → Idempotency → Request Logger  │   │
 │  └──────────────────────────────────────────────────┘   │
 │  ┌──────────────────────────────────────────────────┐   │
-│  │        Route Composer (server/routes.ts)        │   │
+│  │     Route Composer (server/routes.ts ~63 lines) │   │
 │  │  health  → /api/health, /api/metrics            │   │
 │  │  story   → /api/generate-story[-stream]         │   │
 │  │  images  → /api/generate-avatar/scene           │   │
@@ -126,7 +126,7 @@ SettingsContext (lib/SettingsContext.tsx)
 5. **Request Logger** — pino structured logging (method, path, status, duration)
 6. **Load Shedding** — rejects when active-request ceiling is exceeded (503)
 7. **Expo Manifest Routing + Static File Serving**
-8. **Route Registration** — auth gate for API writes and protected reads, then domain modules
+8. **Route Registration** — auth gate for API writes and protected reads (`GET /api/conversations*`), then domain modules (`/api/github/webhook` exempt)
 9. **Global Error Handler** — sanitized responses via `sanitizeErrorMessage()`
 
 ### Rate Limiting
@@ -202,14 +202,14 @@ Single-instance Express today; no shared cache or load balancer. Voice-chat stat
 
 | Boundary | Policy |
 |----------|--------|
-| AI provider keys | Server-side env vars only |
-| Client data | AsyncStorage on-device |
-| Auth tokens | Supabase access token validated server-side on auth-gated requests |
-| TTS filenames | Regex `/^[a-f0-9]+\.mp3$/` before serving |
-| Video IDs | Regex `/^[a-f0-9]+$/` before lookup |
-| CORS | Explicit origin checks; no wildcard |
-| Error messages | Sanitized before returning to clients |
-| `EXPO_PUBLIC_*` vars | Client-visible; never store server secrets |
+| AI provider keys | Server-side env vars only; never exposed to client |
+| Client data | AsyncStorage on-device; no PII stored server-side |
+| Auth tokens | Supabase access tokens validated server-side on auth-gated routes |
+| TTS filenames | Regex `/^[a-f0-9]+\.mp3$/` enforced before serving; path traversal impossible |
+| Video IDs | Regex `/^[a-f0-9]+$/` enforced before lookup |
+| CORS | Replit domains + localhost only; no wildcard |
+| Error messages | `sanitizeErrorMessage()` strips stack traces and internal paths before sending to client |
+| `EXPO_PUBLIC_*` vars | Bundled into client APK — never put secrets with this prefix |
 
 See [SECURITY.md](./SECURITY.md) for the full policy and OWASP assessment.
 
