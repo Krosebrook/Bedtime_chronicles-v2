@@ -6,22 +6,6 @@
     "noEmitOnError": true,
     "ignoreDeprecations": "6.0",
     "paths": {
-      "@/components/*": [
-        "./*",
-        "./legacy-prototype/react-native/components/*"
-      ],
-      "@/lib/*": [
-        "./*",
-        "./legacy-prototype/react-native/services/*"
-      ],
-      "@/constants/*": [
-        "./*",
-        "./legacy-prototype/react-native/config/*"
-      ],
-      "@/hooks/*": [
-        "./*",
-        "./legacy-prototype/react-native/hooks/*"
-      ],
       "@/*": [
         "./*"
       ],
@@ -43,6 +27,9 @@
     "server_dist",
     "static-build",
     "**/*.test.ts",
+    "**/*.test.tsx",
+    "jest.setup.ts",
+    "__tests__/**",
     ".agents/**"
   ]
 }

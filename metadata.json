@@ -1,6 +1,0 @@
-{
-  "name": "Infinity Bedtime Chronicles",
-  "description": "A magical bedtime story app with customizable cosmic tales.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
