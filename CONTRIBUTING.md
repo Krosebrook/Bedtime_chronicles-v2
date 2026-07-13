@@ -8,6 +8,7 @@ Thank you for your interest in contributing! This guide covers the development w
 ## Table of Contents
 
 - [Branch Naming](#branch-naming)
+- [Branch Lifecycle](#branch-lifecycle)
 - [Commit Message Format](#commit-message-format)
 - [Pull Request Process](#pull-request-process)
 - [Code Style](#code-style)
@@ -32,6 +33,51 @@ Use the following prefixes:
 | `test/` | Add/update tests | `test/story-generation-unit` |
 
 Branch names should be lowercase kebab-case, descriptive, and under 60 characters.
+
+**Exception:** Session branches created by Claude Code (prefix `claude/`) bypass the naming convention. These are temporary development branches and are automatically cleaned up after merge.
+
+---
+
+## Branch Lifecycle
+
+Follow this workflow to keep the remote repository clean and reduce cognitive load:
+
+### 1. Push Immediately After First Commit
+- Create your branch locally and make your first commit
+- Push to origin **immediately after** the first commit to signal that work is in progress
+- This ensures your work is backed up and visible to teammates
+
+```bash
+git checkout -b feat/your-feature
+git add .
+git commit -m "feat: start implementing your feature"
+git push -u origin feat/your-feature
+```
+
+### 2. Branch Protection & CI Checks
+- The `main` branch is protected and requires:
+  - ≥1 approval before merge
+  - All CI checks must pass: `npm run typecheck`, `npm run lint`, `npm test`, and production build
+- Feature branches may have any history; squash commits before merge via the GitHub UI
+
+### 3. After Merge: Delete Local Branch
+- Once your PR is merged, **delete the branch locally** to reduce clutter:
+  ```bash
+  git branch -d feat/your-feature  # Safe delete (requires upstream to be merged)
+  ```
+- GitHub can auto-delete the remote branch on merge; enable this in repository settings if desired
+
+### 4. Stale Branch Cleanup
+- Stale branch detection runs manually via GitHub Actions (`Actions` → `Branch Cleanup` → `workflow_dispatch`)
+- Detects branches >90 days old with no commits; supports dry-run mode (default) or actual deletion
+- Merged branches are automatically deleted after PR merge (no manual action needed)
+- Session branches (claude/*) can be left alone during cleanup runs; delete manually if work is abandoned
+
+### Why This Matters
+- **Clean remote:** Reduces branch clutter and makes it easier to find active work
+- **Clear intent:** Early pushes signal "I'm working on this" to the team
+- **Safety:** Pushing immediately ensures your work isn't lost locally
+- **Reduced cognitive load:** Fewer branches = fewer decisions about which branches are alive
 
 ---
 
@@ -104,7 +150,7 @@ Key rules:
 
 ## Testing Requirements
 
-The project uses **Vitest v4** with **585 passing tests** across 14 test files. See [docs/best-practices/TESTING.md](./docs/best-practices/TESTING.md) for the full testing guide.
+The project uses **Vitest v4** with **1010+ passing tests** across 41 test files. See [docs/best-practices/TESTING.md](./docs/best-practices/TESTING.md) for the full testing guide.
 
 ```bash
 npm test                    # Run all tests (single run)
@@ -132,12 +178,15 @@ Update documentation alongside code changes:
 | Change Type | Required Doc Update |
 |-------------|-------------------|
 | New API endpoint | `docs/API.md` — add method, path, request/response schema |
-| New environment variable | `.env.example` + `README.md` env table |
+| New domain route module | `docs/agents/BACKEND-API-AGENT.md` — add to domain scope |
+| New environment variable | `.env.example` + `README.md` env table + `docs/operations/SECRETS-ROTATION.md` if it is a secret |
 | Architecture change | `docs/ARCHITECTURE.md` |
-| New significant decision | `docs/adr/` — create a new ADR |
+| New significant decision | `docs/adr/` — create a new ADR from `docs/adr/template.md` |
 | New component or hook | Inline JSDoc comment on the export |
 | New AI provider | `docs/ARCHITECTURE.md` AI routing section + `README.md` tech stack table |
-| Security change | `docs/SECURITY.md` |
+| Security change | `docs/SECURITY.md` + `docs/best-practices/SECURITY.md` |
+| New observability integration | `docs/operations/OBSERVABILITY.md` |
+| Secrets added/rotated | `docs/operations/SECRETS-ROTATION.md` inventory + `docs/operations/EAS-SECRETS-CHECKLIST.md` |
 
 All changes go in `docs/CHANGELOG.md` under `[Unreleased]` before each release.
 
@@ -172,15 +221,30 @@ npm run expo:dev     # Expo dev server
 
 ## Release Process
 
-This project does not yet have a formal release pipeline. When one is established:
+### Version Numbering
 
-1. Update `docs/CHANGELOG.md` — move `[Unreleased]` items under a new version header `[x.y.z] — YYYY-MM-DD`
-2. Bump `version` in `package.json`
-3. Tag the commit: `git tag v<x.y.z>`
-4. Push the tag: `git push origin v<x.y.z>`
-5. Deploy per [docs/runbooks/deploy.md](./docs/runbooks/deploy.md)
+Follow [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`
 
-Version numbers follow [Semantic Versioning](https://semver.org/): `MAJOR.MINOR.PATCH`
 - **MAJOR** — breaking API change or major UX redesign
 - **MINOR** — new feature, backward-compatible
 - **PATCH** — bug fix, security patch, documentation
+
+### Release Steps
+
+1. **Changelog** — move all `[Unreleased]` sections in `docs/CHANGELOG.md` under a single new version header `[x.y.z] — YYYY-MM-DD`
+2. **Version bump** — update `version` in `package.json`
+3. **Tag** — `git tag v<x.y.z> && git push origin v<x.y.z>`
+4. **Server deploy** — follow `docs/runbooks/deploy.md` (Replit push-to-deploy or Vercel)
+5. **Mobile build** — `eas build --platform android --profile production` (see `docs/operations/PLAY_STORE_DEPLOYMENT.md`)
+6. **Play Store** — upload the `.aab` to the Google Play Console internal track, promote through alpha → beta → production
+
+### Pre-release Checklist
+
+- [ ] `npm test` — all tests pass
+- [ ] `npm run typecheck` — zero TS errors
+- [ ] `npm run lint` — zero lint errors
+- [ ] `npm audit --audit-level=critical` — zero critical vulnerabilities
+- [ ] `docs/CHANGELOG.md` updated
+- [ ] `package.json` version bumped
+- [ ] `.env.example` up to date with any new env vars
+- [ ] EAS secrets set for all required env vars (`docs/operations/EAS-SECRETS-CHECKLIST.md`)

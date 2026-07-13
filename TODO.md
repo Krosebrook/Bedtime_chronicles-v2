@@ -1,39 +1,71 @@
-# TODO.md — Native Android Bedtime Chronicles Prioritized Backlog
+<!-- Last verified: 2026-07-12 -->
+<!-- Generated from codebase scan + docs/ROADMAP.md. Re-run scan to refresh TODO signals. -->
+<!-- docs/ROADMAP.md is the actively-maintained backlog; this file lags behind it — reconcile against ROADMAP.md before trusting stale-looking rows. -->
 
-This backlog tracks the remaining migration, visual polish, and child safety compliance items for **Infinity Heroes: Bedtime Chronicles** (Native Android Kotlin/Compose Port).
+# TODO.md — Prioritized Backlog
 
-Items are prioritized using **Weighted Shortest Job First (WSJF)**.
+Items scored with Weighted Shortest Job First (WSJF): `(Business Value + Time Criticality + Risk Reduction) / Job Size`
 
----
-
-## 🚀 Active Backlog (Prioritized)
-
-### 🥇 High Priority (Target: Phase 3)
-
-| WSJF | Item / Feature | Category | Job Size | Status | Target File / Area |
-| :---: | :--- | :--- | :---: | :---: | :--- |
-| **31.0** | **Native Privacy Policy View** | Compliance | Small | ⏳ Pending | `ui/screens/PrivacyScreen.kt` |
-| **17.0** | **COPPA Parental Gate mathematical verification overlay** | Security | Medium | ⏳ Pending | `ui/screens/components/ParentGateDialog.kt` |
-| **8.0** | **Exponential Backoff AI retry with offline resources fallback** | Quality | Medium | ⏳ Pending | `data/GeminiService.kt` + local sample stories |
-
-### 🥈 Medium Priority (Target: Phase 4)
-
-| WSJF | Item / Feature | Category | Job Size | Status | Target File / Area |
-| :---: | :--- | :--- | :---: | :---: | :--- |
-| **5.3** | **"Mad Libs" Silly custom prompt injector** | Interactive | Medium | ⏳ Pending | `ui/screens/MadLibsScreen.kt` |
-| **3.6** | **Pulsing Orb 8s breathing loop (Canvas) & live starry background** | Sleep UX | Medium | ⏳ Pending | `ui/screens/components/PulsingOrb.kt` |
-| **3.0** | **Incremental Room DB version migrations tracking** | Tech Debt | Medium | ⏳ Pending | `data/AppDatabase.kt` |
+Scale: H = 8, M = 5, S = 3, L = 1 for Value/Criticality/Risk. S = 2, M = 5, L = 8 for Size.
 
 ---
 
-## 🏆 Completed Native Features
+## Ready (Backlog — Prioritized)
 
-- **Idle Creation Tooltip (Phase 3)**: Added a bouncing, contextual "Tap to Create!" tooltip and long-press accessibility popup above the central Home creation button to better guide new explorers into the magical bedtime workflow.
-- **Full-Screen Immersive Satchel Modal (Phase 3)**: Designed and implemented an adaptive, high-tactility full-screen dialog overlay utilizing deep space midnight background surfaces, custom color glowing neon item boundaries, and double-layered visual orbs. Automatically adjusts layout between wide-screen multi-column side-by-side split columns (tablet) and compact fluid horizontal-scrolling chip bars (mobile).
-- **Bedtime Artifact Chamber (Phase 3)**: Provides immersive detail panels outlining primary calming sleep actions, extensive lore/mythology backgrounds, and instant selection, drop, and story-injecting usage controls. Cataloged the deep contextual panels detailing primary therapeutic sleep effects, unique celestial lore, and instant item-manipulation buttons.
-- **Hero Backstory Generator (Phase 3)**: Integrated a high-fidelity selective backstory creation wizard using predefined lore parameters covering origins, motivational paths, and stellar past milestones, backed by direct Gemini API synthesis and resilient locale fallback blocks. Logged the pre-packaged lore creator and selective backstory generator running on the Gemini API interface with local fallback protection.
-- **Cosmic Satchel Subsystem & Surrounding Discovery (Phase 3)**: Created client-side limited-capacity database-persisted inventory lists tracking bedtime relics. Included random spatial exploration actions triggering responsive Material Discovery Alerts representing seven legendary Sleep Treasures. Documented the client-to-database persistent inventory tracking limit (5 items) and "Search Surroundings" interactive actions.
-- **Cosmic Sticker Book (Phase 2)**: Full interactive sticker book with drag-and-drop, rotatable and scalable canvas elements, dynamic category filtering, background customization, and dynamic unlocks based on story content read.
-- **Magical Page Transitions (Phase 2)**: Added subtle, delightful scale-in, slide, and fade page transitions matching modern Material 3 standard aesthetics inside `ReaderScreen.kt`.
-- **Home, Reader, Creator, and Library Screens (Phase 1)**: Ported all primary presenter layouts to 100% native Kotlin and Jetpack Compose.
-- **Wave-Shaping Ambient Audio (Phase 1)**: Interactive DSP soundscapes dynamically synthesized on-device (`AmbientSoundHelper`) for gentle sleep therapy.
+### High Priority
+
+| Priority | Item | Category | Business Value | Time Criticality | Risk/Opportunity | Job Size | WSJF | Status | Issue/Notes |
+|----------|------|----------|---------------|-----------------|-----------------|----------|------|--------|-------------|
+| 1 | EAS build & Play Store submission | Deployment | H | H | H | M | 4.8 | ready | eas.json + build-android.sh + PLAY_STORE_DEPLOYMENT.md all set; needs EAS secrets + AAB build |
+| 2 | Resolve remaining npm audit vulnerabilities | Security | M | M | M | S | 5.0 | blocked | 2 high in `tmp`/`undici` transitive chain (not firebase-admin — app has no Firebase dependency; blocked on upstream); CI at --audit-level=critical |
+
+### Low Priority
+
+| Priority | Item | Category | Business Value | Time Criticality | Risk/Opportunity | Job Size | WSJF | Status | Issue/Notes |
+|----------|------|----------|---------------|-----------------|-----------------|----------|------|--------|-------------|
+| 3 | Remove or wire up `server/replit_integrations/chat/routes.ts` | Code Quality | S | S | S | S | 2.5 | ready | `registerChatRoutes()` is implemented but never called from server/routes.ts — dead code found in 2026-07-12 doc audit |
+| 4 | Encrypt client-side AsyncStorage | Security | S | S | S | L | 9.0 | low-priority | Stored data is non-sensitive (story text, badges); not a current risk |
+
+---
+
+## Completed
+
+| Item | Category | Completed | Notes |
+|------|----------|-----------|-------|
+| Add Supabase Auth (bearer-token JWT middleware) | Feature/Security | 2026-07-06 | Optional, gated on SUPABASE_SERVICE_ROLE_KEY + Supabase URL; 503 in production when unconfigured |
+| Fix voice-chat IDOR | Security | 2026-07-06 | Ownership (userId) checks added on all conversation reads/writes in server/replit_integrations/audio/routes.ts |
+| Parent-controls PIN brute-force lockout | Security | 2026-07-06 | 5 failed attempts → 30s lockout; lib/storage.ts + components/ParentControlsModal.tsx |
+| Complete server/routes.ts migration | Code Quality | 2026-06-13 | Removed all inline handlers; routes.ts is now ~70-line pure composer (grew since as github-webhook route was added); all logic in server/routes/*.ts domain modules |
+| Provision Supabase production database | Infrastructure | 2026-06-13 | Project aeraxfupuvwiskmfjliq (us-east-1); conversations + messages tables migrated |
+| Add Sentry error tracking | Observability | 2026-06-13 | @sentry/node (server) + @sentry/react-native (client); graceful no-op when DSN unset |
+| Add Cloudflare KV persistent rate limiting | Infrastructure | 2026-06-13 | Namespace ed09afa77f9243bbb08f3dbe34df1e70; checkRateLimitAsync() used by middleware; falls back to in-memory |
+| Build voice chat mobile UI screen | Feature | 2026-06-11 | app/voice-chat.tsx (672 lines); expo-av recording; SSE streaming; reached from profile tab |
+| Refactor app/story.tsx | Code Quality | 2026-06-11 | 386-line composition shell; logic in lib/use*.ts hooks; presentational pieces in components/Story* |
+| Add AI provider test coverage | Testing | 2026-06-11 | server/ai/providers/*.test.ts for all 4 providers |
+| COPPA parental-consent gate + privacy policy | Compliance | 2026-06-11 | app/parental-consent.tsx + app/privacy.tsx; routing gate in _layout.tsx |
+| Fix CI lint toolchain (ESLint 10 → 9) | CI | 2026-06-11 | eslint pinned to ^9.39.4; lint now runs clean |
+| Patch shell-quote critical CVE | Security | 2026-06-11 | Added package.json overrides; clears only critical advisory |
+| Fix all_heroes badge | Bug Fix | 2026-06-11 | Now counts custom heroes toward Hero Collector badge |
+| Fix AI streaming model field | Bug Fix | 2026-06-11 | Reports textModel instead of provider.name |
+| Fix suggest-settings JSON re-parse | Bug Fix | 2026-06-11 | Uses parsedJson from router instead of re-parsing |
+| Upgrade to Expo SDK 55 | Tech Debt | 2026-04-24 | expo 55.0.17; removed expo-asset patch requirement |
+| Add supertest + integration tests | Tech Debt | 2026-04-24 | 895 → 1010 tests |
+| Fix TypeScript errors | Bug Fix | 2026-04-07 | `npm run typecheck` exits clean |
+| Upgrade drizzle-kit to v0.31.10 | Security/Tech Debt | 2026-04-07 | Fixes moderate esbuild vulnerability |
+| Apply non-breaking npm audit fixes | Security | 2026-04-07 | 18 → 14 vulns |
+| Add Vitest test suite | Tech Debt | 2026-04-07 | Now 1010 tests across 41 files |
+| Add markdown link checker to CI | Documentation | 2026-04-07 | lycheeverse/lychee-action |
+| Complete documentation suite | Documentation | 2026-03-27 | CONTRIBUTING/CLAUDE/GEMINI/AGENTS/MEMORY/CONVENTIONS/GLOSSARY/ADRs/runbooks |
+| Wire read/unread story indicators into UI | Feature | 2026-03-25 | getReadStories/markStoryRead wired into library + completion screens |
+| Wire story feedback/rating UI | Feature | 2026-03-25 | Emoji reactions on completion screen; calls updateFeedback |
+| Reuse HeroCard.tsx in hero selection | Feature | 2026-03-25 | HeroCard grid in app/(tabs)/create.tsx |
+| Add KeyboardAwareScrollView to input forms | Feature | 2026-03-25 | Wired in story-details.tsx, sleep-setup.tsx, quick-create.tsx |
+| Unify dual settings systems | Bug Fix | 2026-03-13 | SettingsModal now uses SettingsContext |
+| Add security headers | Security | 2026-03-13 | X-Content-Type-Options, X-Frame-Options, etc. |
+| Wire up voice chat routes | Feature | 2026-03-13 | Backend functional |
+
+---
+
+## TODOs Found in Code
+
+No open `// TODO` comments found in source files as of last scan (2026-06-13).

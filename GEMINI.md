@@ -1,7 +1,7 @@
-<!-- Last verified: 2026-06-15 -->
+<!-- Last verified: 2026-03-21 -->
 # GEMINI.md — Gemini CLI Agent Context
 
-Custom instructions for Gemini CLI and Gemini-based coding agents working on this native Android repository.
+Custom instructions for Gemini CLI and Gemini-based coding agents working on this repository.
 
 ---
 
@@ -9,10 +9,10 @@ Custom instructions for Gemini CLI and Gemini-based coding agents working on thi
 
 **Project:** Infinity Heroes: Bedtime Chronicles
 **Type:** Children's bedtime story mobile app (ages 3–9)
-**Architecture:** Modern Android Development (MAD) Native App (Kotlin / Jetpack Compose)
-**Repo structure:** Native Android project with `/app` module containing screens, viewmodels, data access, and utilities.
+**Architecture:** Expo SDK 54 (React Native) frontend + Express.js v5 backend, TypeScript throughout
+**Repo structure:** Single full-stack app — `app/` (screens), `components/`, `lib/`, `server/`, `shared/`, `constants/`, `docs/`
 
-The app lets children select cosmic superhero characters and participate in interactive bedtime stories (Cosmic Adventures) generated via the Google Gemini API (Imagen 3 for Cover and Scene generation under `v1beta/models/imagen-3.0-generate-002:generateImages`). Stories include programmatic high-fidelity soundscapes (DSP synthesized waves), Text-to-Speech narration, and gentle fading sleep timers to protect baby sleep states.
+The app lets children pick a superhero character and generate personalized bedtime stories using a multi-provider AI fallback chain (Gemini → OpenAI → Anthropic → OpenRouter). Stories include AI-generated scene illustrations, ElevenLabs TTS narration, and background music.
 
 ---
 
@@ -20,83 +20,131 @@ The app lets children select cosmic superhero characters and participate in inte
 
 | Concern | Technology |
 |---------|-----------|
-| Mobile OS | Android (minSdk: 26, targetSdk: 35) |
-| Language | Kotlin exclusively (1.9+) |
-| View Layer | Jetpack Compose (Material 3 components and color tokens) |
-| Navigation | Navigation Compose (with type-safe serializable route structures) |
-| Dependency Injection | Clean constructor injection (ViewModelProvider / local instantiation) |
-| Local Persistence | Jetpack Room SQLite databases with DAOs (`AppDatabase`) |
-| Preferences | Singleton AppPreferences (`AppPreferences.kt`) |
-| Async/Concurrency | Kotlin Coroutines, StateFlow, collection with Lifecycle awareness |
-| Audio/Sound | Android MediaPlayer (TTS) & background thread AudioTrack synthesized wave DSP (`AmbientSoundHelper`) |
-| LLM & Art APIs | Retrofit direct integration with Google Gemini & Imagen REST API services |
+| Mobile | Expo SDK 54, React Native 0.81.5 |
+| Routing | Expo Router v6 (file-based) |
+| Server | Express.js v5, Node.js, TypeScript |
+| Primary AI | Google Gemini (`gemini-2.5-flash`, `gemini-2.5-flash-image`) |
+| AI fallback 1 | OpenAI (`gpt-4o-mini`, `gpt-image-1`) |
+| AI fallback 2 | Anthropic Claude (`claude-sonnet-4-6`) |
+| AI fallback 3 | OpenRouter (xAI Grok, Mistral, Cohere, Meta Llama) |
+| TTS | ElevenLabs `eleven_multilingual_v2` |
+| Database | PostgreSQL + Drizzle ORM (voice chat only) |
+| Client state | React Context + TanStack React Query v5 |
+| Client storage | AsyncStorage |
+| Validation | Zod v3 |
+| Animations | react-native-reanimated v4 |
 
 ---
 
 ## Code Conventions
 
-### Naming & Package Rules
-- Composable Screens: `XxxScreen.kt` under `com.example.ui.screens.*`
-- Composable Components: Located in reusable UI utility blocks or distinct custom layout components
-- ViewModels: `XxxViewModel.kt` under `com.example.viewmodel.*` (no strong context leaks)
-- DAO & Database: `XxxDao.kt` and Entity mappings under `com.example.data.*`
-- Synchronous Utilities: `XxxHelper.kt` under `com.example.util.*`
+### Naming Rules
+- Screen files: `kebab-case.tsx` under `app/`
+- Component files: `PascalCase.tsx` under `components/`
+- Utility files: `camelCase.ts` under `lib/` or `server/`
+- Constants: `SCREAMING_SNAKE_CASE` (true constants), `camelCase` (config objects)
+- AsyncStorage keys: `@infinity_heroes_<descriptor>` pattern (e.g., `@infinity_heroes_app_settings`)
+- Hooks: `useXxx` prefix
 
 ### Import Order
-1. Android framework & Kotlin core imports
-2. Compose UI, Material 3 foundation components, and state extensions
-3. Room & database flow imports
-4. Relative package imports (`com.example.*`)
+1. React / React Native core imports
+2. Expo SDK imports
+3. Third-party library imports
+4. Internal imports (`constants/`, `lib/`, `components/`, `shared/`)
+5. Relative imports
 
-### Kotlin Standards
-- Prefer strict immutable state flows (`StateFlow` exposed from ViewModel via read-only property).
-- Avoid wildcards or raw unchecked types (`Any` / raw type casting).
-- Always observe state using `collectAsStateWithLifecycle()` to maintain lifecycle safety.
+### TypeScript
+- `strict: true` — never use `any` without an inline comment explaining why
+- Define component props as interfaces directly above the component
+- API schemas: define with Zod in `shared/schema.ts` or inline
+
+### Styling
+- `StyleSheet.create()` always — no bare inline style objects
+- Colors from `constants/colors.ts` — never hardcode hex values
+- Safe area insets via `react-native-safe-area-context` on all screens
 
 ---
 
-## Security & Child Compliance
+## Security Constraints
 
 These rules are non-negotiable:
 
-1. **Local Key Protection**: Do not hardcode API Keys or client credentials in source code. Use the Gradle Secrets Plugin (`GEMINI_API_KEY` injected via `BuildConfig`).
-2. **Cozy Safety Context**: Ensure AI prompt generators contain clear rules safe for children, filtered words, and kid-appropriate storytelling modes.
-3. **Failsafe Content Fallback**: When network calls fail or keys are absent, fallback smoothly to optimized pre-packaged localized bedtime stories (`BedtimeAssets.kt`).
+1. **No API keys on the client.** All AI provider keys are server-side env vars only.
+2. **All user string inputs must pass through `sanitizeString()`** before inclusion in AI prompts. This is defined in `server/routes.ts`.
+3. **Child safety prompt always included.** The `CHILD_SAFETY_RULES` constant must be part of every story generation system prompt.
+4. **TTS file serving**: only filenames matching `/^[a-f0-9]+\.mp3$/` are served. Do not loosen this check.
+5. **Rate limiting**: the per-IP sliding window rate limiter applies to all POST endpoints. New POST routes must be inside the rate-limiter middleware.
+6. **Error responses**: use `sanitizeErrorMessage()` — never return raw error objects or stack traces to clients.
 
 ---
 
 ## Architecture Constraints
 
-- **Single Screen Constraint**: For simple feature scopes, keep layouts single-screen to avoid navigation sprawl.
-- **Edge-to-Edge compliance**: Always design composables with a Material 3 `Scaffold` container that automatically accounts for window insets (`Modifier.statusBarsPadding()` or `contentPadding`).
-- **Touch Target Density**: Ensure touchable widgets are at least `48dp` x `48dp` for accessibility standard compliance.
-- **Test Tags**: Utilize `.testTag("unique_snake_case")` modifiers on any interactive elements (buttons, inputs, sliders) for robust automated test instrumentation.
+- **AI calls through `server/ai/index.ts` only.** Never call provider SDKs directly from route handlers.
+- **Settings only via `SettingsContext`.** Do not create parallel settings storage mechanisms.
+- **AsyncStorage via `lib/storage.ts` helpers.** Do not call AsyncStorage directly from screens or components.
+- **No direct database queries from routes.** Use the Drizzle ORM client from `server/db.ts`.
 
 ---
 
-## Compilation, Verification & Build Commands
-
-Always run verification before claiming task completion:
+## Build, Test, and Deploy Commands
 
 ```bash
-# Verify build / compile the native APK
-compile_applet
+# Development
+npm install                 # Install deps (patch-package runs automatically)
+npm run server:dev          # Express server on port 5000
+npm run expo:dev            # Expo dev client (Replit environment)
+npx expo start              # Expo dev client (non-Replit)
+
+# Type and lint checks
+npm run typecheck           # TypeScript, no emit
+npm run lint                # ESLint
+npm run lint:fix            # ESLint auto-fix
+
+# Production build
+npm run server:build        # esbuild → server_dist/index.js
+npm run server:prod         # Run production bundle
+npm run expo:static:build   # Static Expo web bundle
+
+# Database
+npm run db:push             # Apply Drizzle schema to DATABASE_URL
 ```
 
-Do not invoke wrapper binaries like `./gradlew` or `gradlew` directly because the execution container operates on a raw Gradle installation.
+---
+
+## Known Constraints and Gotchas
+
+- `npm run dev` does not exist. Use `npm run server:dev` and `npm run expo:dev` separately.
+- Expo dev commands embed `REPLIT_DEV_DOMAIN` — outside Replit, use `npx expo start` instead.
+- `patches/expo-asset+12.0.12.patch` is a temporary fix; will be removed on Expo SDK 55 upgrade.
+- `server/replit_integrations/` is Replit-provided boilerplate; the voice chat backend is wired up but the mobile UI screen does not exist yet.
+- `components/HeroCard.tsx` is intentionally kept but not currently rendered anywhere — it's preserved for future reuse.
+- `lib/storage.ts` (client AsyncStorage helpers) and `server/storage.ts` (server in-memory cache) are different files serving different purposes.
+- No automated test suite exists yet. Verify changes manually.
 
 ---
 
 ## Common Workflows
 
-### Add a Composable Screen
-1. Create `XxxScreen.kt` in `com.example.ui.screens/`.
-2. Add a serializable routing marker key object.
-3. Wire up the Screen route composition in `com.example.ui.navigation.Navigation.kt`.
-4. Ensure all layout items contain clean `.testTag("<screen_name>_<item_name>")` attributes.
+### Add a new API endpoint
+1. Add route in `server/routes.ts`
+2. Validate input with Zod; sanitize string fields with `sanitizeString()`
+3. Place AI calls inside `server/ai/index.ts` router
+4. Apply rate limiting middleware
+5. Document in `docs/API.md`
 
-### Add a Database DAO
-1. Write the target SQL Room `@Entity` class in `com.example.data/`.
-2. Map operations under an interface annotated with `@Dao`.
-3. Declare DAO getters in `AppDatabase.kt`.
-4. Run `compile_applet` to trigger annotation processors and KSP compilation.
+### Add a new screen
+1. Create `app/<name>.tsx` — Expo Router registers it automatically
+2. Tab screens go in `app/(tabs)/`
+3. Use `SafeAreaView` and colors from `constants/colors.ts`
+4. Add to project structure in `README.md` if significant
+
+### Update environment variables
+1. Add to `.env.example` with a blank value and inline comment
+2. Update the env table in `README.md`
+3. Use `process.env.VAR_NAME` in server code; `process.env.EXPO_PUBLIC_VAR_NAME` for client-safe vars
+
+### Modify database schema
+1. Edit `shared/schema.ts` (or `shared/models/chat.ts`)
+2. Run `npm run db:push` against a dev database
+3. Test migration before committing
