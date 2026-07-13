@@ -170,4 +170,39 @@ export function registerStoryRoutes(app: Express): void {
       }
     }
   });
+
+  // Best-effort drain target for lib/sync-queue.ts: currently logs/echoes each
+  // interaction rather than persisting it — see CLAUDE.md Known Gotchas.
+  app.post("/api/sync/interactions", rateLimited(), async (req, res) => {
+    try {
+      const { interactions } = req.body;
+      if (!interactions || !Array.isArray(interactions)) {
+        return res.status(400).json({ error: "Missing or invalid interactions array" });
+      }
+
+      req.log?.info({ count: interactions.length }, "Syncing interactions batch from client");
+
+      const validated = interactions.map((inter: any) => {
+        req.log?.info(
+          { type: inter.type, storyId: inter.storyId, timestamp: inter.timestamp },
+          "Synced offline interaction"
+        );
+        return {
+          id: inter.id || `act_${Math.random().toString(36).substring(2, 11)}`,
+          type: inter.type,
+          storyId: inter.storyId,
+          timestamp: inter.timestamp || Date.now(),
+          status: "processed",
+        };
+      });
+
+      return res.json({
+        success: true,
+        syncedCount: validated.length,
+        results: validated,
+      });
+    } catch (error: unknown) {
+      sendRouteError(req, res, error, "interactions sync failed", "Failed to sync offline interactions");
+    }
+  });
 }

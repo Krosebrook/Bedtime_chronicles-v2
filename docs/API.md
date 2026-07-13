@@ -145,6 +145,38 @@ data: {"type":"done"}
 
 ---
 
+## Sync
+
+### `POST /api/sync/interactions`
+Best-effort drain target for the client's offline interaction queue
+(`lib/sync-queue.ts`). The client queues `like`/`unlike`/`story_completion`
+interactions in AsyncStorage while offline and posts the batch here once
+connectivity is restored (`lib/useSyncOffline.ts`). The server currently
+logs and echoes each interaction rather than persisting it — there is no
+backing datastore for this endpoint yet.
+
+**Request Body:**
+```json
+{
+  "interactions": [
+    { "id": "act_abc123", "type": "like", "storyId": "story-1", "timestamp": 1700000000000 }
+  ]
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "syncedCount": 1,
+  "results": [
+    { "id": "act_abc123", "type": "like", "storyId": "story-1", "timestamp": 1700000000000, "status": "processed" }
+  ]
+}
+```
+
+---
+
 ## Image Generation
 
 ### `POST /api/generate-avatar`
