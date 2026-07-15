@@ -38,7 +38,7 @@ absent here: `server/safety/*`, `shared/safety-terms.ts`, `lib/sync/*`,
 `shared/sync-types.ts`, `supabase/migrations/0001_sync_tables.sql`,
 `lib/tts-cache.ts`, `lib/narration.ts`, and their test files.
 
-This repo's `main` and this audit branch are otherwise current (dependabot
+This repo's `main` and this audit branch are otherwise current (Dependabot
 commits through 2026-07-13; typecheck/lint/test status not independently
 re-verified here — see the canonical repo's audit for those numbers, which
 apply once the code above is ported).
