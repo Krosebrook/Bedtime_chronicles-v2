@@ -19,3 +19,9 @@ https://legendapp\.com/open-source/.*
 # Returns 403 to automated checkers (bot-blocked); the link is valid in a browser.
 https://openai\.com/policies/business-terms/
 https://dash\.cloudflare\.com(/.*)?
+
+# Private sibling repos (see Merge Provenance in CLAUDE.md) — 404 to anonymous
+# link checkers by design; the links are valid for anyone with repo access.
+^https?://github\.com/[Cc]haos[Cc]lub[Cc]o/[Ii]nfinite-[Hh]eros-[Bb]edtime-[Cc]hronicles-v5(/.*)?$
+^https?://github\.com/[Kk]rosebrook/[Ii]nfinite-[Hh]eros-[Bb]edtime-[Cc]hronicles-v5(/.*)?$
+^https?://github\.com/[Kk]rosebrook/[Bb]edtime_chronicles-v2(/.*)?$
